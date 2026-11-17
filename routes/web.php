@@ -5,20 +5,23 @@ use App\Http\Controllers\AkunController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\Instansi;
 use App\Http\Controllers\PencariKerja;
+use App\Http\Controllers\Publik;
 use App\Http\Controllers\WilayahController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Halaman publik
+| Halaman publik (lowongan TIDAK pernah tampil di sini)
 |--------------------------------------------------------------------------
 */
-Route::view('/', 'public.home')->name('home');
-Route::view('/pelatihan', 'public.home')->name('public.pelatihan.index');
-Route::view('/tentang', 'public.home')->name('public.tentang');
-Route::view('/kontak', 'public.home')->name('public.kontak');
+Route::get('/', Publik\HomeController::class)->name('home');
+Route::get('/pelatihan', [Publik\PelatihanController::class, 'index'])->name('public.pelatihan.index');
+Route::get('/pelatihan/{pelatihan:slug}', [Publik\PelatihanController::class, 'show'])->name('public.pelatihan.show');
+Route::get('/tentang', [Publik\HalamanController::class, 'tentang'])->name('public.tentang');
+Route::get('/kontak', [Publik\HalamanController::class, 'kontak'])->name('public.kontak');
 
 Route::get('/wilayah/kecamatan/{kecamatan}/desa', [WilayahController::class, 'desa'])->name('wilayah.desa');
 
@@ -49,6 +52,11 @@ Route::middleware(['auth', 'aktif'])->group(function () {
     Route::get('/akun/password', [AkunController::class, 'editPassword'])->name('akun.password.edit');
     Route::put('/akun/password', [AkunController::class, 'updatePassword'])->name('akun.password.update');
 
+    // Berkas private — setiap akses dicek Policy
+    Route::get('/berkas/instansi/{instansi}/{jenis}', [BerkasController::class, 'instansi'])->name('berkas.instansi');
+    Route::get('/berkas/pendaftar/{pencariKerja}/cv', [BerkasController::class, 'cv'])->name('berkas.cv');
+    Route::get('/berkas/sertifikat/{peserta}', [BerkasController::class, 'sertifikat'])->name('berkas.sertifikat');
+
     /*
     |--------------------------------------------------------------------------
     | Admin (Super Admin, Admin Survei, Admin Lapangan)
@@ -57,6 +65,69 @@ Route::middleware(['auth', 'aktif'])->group(function () {
     Route::prefix('admin')->name('admin.')->middleware('role:super_admin|admin_survey|admin_lapangan')->group(function () {
         Route::get('/', Admin\DashboardController::class)->name('dashboard');
 
+        // Survei instansi
+        Route::middleware('permission:survei-instansi')->prefix('survei-instansi')->name('survei-instansi.')->group(function () {
+            Route::get('/', [Admin\SurveiInstansiController::class, 'index'])->name('index');
+            Route::get('/{instansi}', [Admin\SurveiInstansiController::class, 'show'])->name('show');
+            Route::post('/{instansi}/putusan', [Admin\SurveiInstansiController::class, 'putusan'])->name('putusan');
+        });
+
+        // Survei lowongan
+        Route::middleware('permission:survei-lowongan')->prefix('survei-lowongan')->name('survei-lowongan.')->group(function () {
+            Route::get('/', [Admin\SurveiLowonganController::class, 'index'])->name('index');
+            Route::post('/{lowongan}/putusan', [Admin\SurveiLowonganController::class, 'putusan'])->name('putusan');
+        });
+
+        // Lowongan (internal, hanya admin) + tab pendaftar cocok
+        Route::middleware('permission:lihat-lowongan')->prefix('lowongan')->name('lowongan.')->group(function () {
+            Route::get('/', [Admin\LowonganController::class, 'index'])->name('index');
+            Route::get('/{lowongan}', [Admin\LowonganController::class, 'show'])->name('show');
+            Route::post('/{lowongan}/tutup', [Admin\LowonganController::class, 'tutup'])->name('tutup');
+        });
+
+        // Pendaftar (dibatasi per kecamatan)
+        Route::middleware('permission:kelola-pendaftar')->group(function () {
+            Route::resource('pendaftar', Admin\PendaftarController::class)
+                ->parameters(['pendaftar' => 'pencariKerja'])->except(['destroy']);
+            Route::post('pendaftar/{pencariKerja}/status', [Admin\PendaftarController::class, 'ubahStatus'])->name('pendaftar.status');
+        });
+
+        // Penyaluran
+        Route::middleware('permission:kelola-penyaluran')->prefix('penyaluran')->name('penyaluran.')->group(function () {
+            Route::get('/', [Admin\PenyaluranController::class, 'index'])->name('index');
+            Route::post('/lowongan/{lowongan}', [Admin\PenyaluranController::class, 'store'])->name('store');
+            Route::put('/{penyaluran}/hasil', [Admin\PenyaluranController::class, 'hasil'])->name('hasil');
+        });
+
+        // Pelatihan
+        Route::middleware('permission:kelola-pelatihan')->group(function () {
+            Route::resource('pelatihan', Admin\PelatihanController::class)->except(['destroy']);
+            Route::post('pelatihan/{pelatihan}/status', [Admin\PelatihanController::class, 'ubahStatus'])->name('pelatihan.status');
+        });
+
+        // Peserta pelatihan (Admin Lapangan hanya kecamatannya)
+        Route::middleware('permission:kelola-peserta-pelatihan')->prefix('peserta')->name('peserta.')->group(function () {
+            Route::get('/', [Admin\PesertaPelatihanController::class, 'index'])->name('index');
+            Route::get('/pelatihan/{pelatihan}', [Admin\PesertaPelatihanController::class, 'pelatihan'])->name('pelatihan');
+            Route::put('/{peserta}/seleksi', [Admin\PesertaPelatihanController::class, 'seleksi'])->name('seleksi');
+            Route::put('/{peserta}/hasil', [Admin\PesertaPelatihanController::class, 'hasil'])->name('hasil');
+        });
+
+        // Konten halaman awal
+        Route::middleware('permission:kelola-konten')->group(function () {
+            Route::get('konten', [Admin\KontenController::class, 'edit'])->name('konten.edit');
+            Route::put('konten', [Admin\KontenController::class, 'update'])->name('konten.update');
+            Route::resource('testimoni', Admin\TestimoniController::class)->except(['show']);
+        });
+
+        // Laporan & export
+        Route::middleware('permission:lihat-laporan')->prefix('laporan')->name('laporan.')->group(function () {
+            Route::get('/', [Admin\LaporanController::class, 'index'])->name('index');
+            Route::get('/excel', [Admin\LaporanController::class, 'excel'])->name('excel');
+            Route::get('/pdf', [Admin\LaporanController::class, 'pdf'])->name('pdf');
+        });
+
+        // Akun admin & master data
         Route::middleware('permission:kelola-admin')->group(function () {
             Route::resource('users', Admin\AdminUserController::class)->except(['show', 'destroy']);
         });
@@ -78,6 +149,10 @@ Route::middleware(['auth', 'aktif'])->group(function () {
     */
     Route::prefix('instansi')->name('instansi.')->middleware('role:instansi')->group(function () {
         Route::get('/', Instansi\DashboardController::class)->name('dashboard');
+        Route::get('/verifikasi', [Instansi\VerifikasiController::class, 'edit'])->name('verifikasi.edit');
+        Route::put('/verifikasi', [Instansi\VerifikasiController::class, 'update'])->name('verifikasi.update');
+        Route::resource('lowongan', Instansi\LowonganController::class)->except(['destroy']);
+        Route::post('lowongan/{lowongan}/tutup', [Instansi\LowonganController::class, 'tutup'])->name('lowongan.tutup');
     });
 
     /*
@@ -87,5 +162,14 @@ Route::middleware(['auth', 'aktif'])->group(function () {
     */
     Route::prefix('saya')->name('pencari.')->middleware('role:pencari_kerja')->group(function () {
         Route::get('/', PencariKerja\DashboardController::class)->name('dashboard');
+        Route::get('/profil', [PencariKerja\ProfilController::class, 'edit'])->name('profil.edit');
+        Route::put('/profil', [PencariKerja\ProfilController::class, 'update'])->name('profil.update');
+        Route::get('/pelatihan', [PencariKerja\PelatihanController::class, 'index'])->name('pelatihan.index');
+    });
+
+    // Form pendaftaran pelatihan (wajib login pencari kerja)
+    Route::middleware('role:pencari_kerja')->group(function () {
+        Route::get('/pelatihan/{pelatihan:slug}/daftar', [PencariKerja\PelatihanController::class, 'create'])->name('pencari.pelatihan.daftar');
+        Route::post('/pelatihan/{pelatihan:slug}/daftar', [PencariKerja\PelatihanController::class, 'store'])->name('pencari.pelatihan.store');
     });
 });

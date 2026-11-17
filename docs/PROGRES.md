@@ -3,7 +3,7 @@
 ## Status tahap
 
 - [x] Tahap 1 — Dasar: setup, auth, 5 role + permission, master data, akun admin + kecamatan, layout, komponen, file private, akun demo, semua migration
-- [ ] Tahap 2 — Instansi & survei
+- [x] Tahap 2 — Instansi & survei
 - [ ] Tahap 3 — Lowongan
 - [ ] Tahap 4 — Pencari kerja & Admin Lapangan
 - [ ] Tahap 5 — Pencocokan & penyaluran
