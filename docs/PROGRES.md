@@ -6,7 +6,7 @@
 - [x] Tahap 2 — Instansi & survei
 - [x] Tahap 3 — Lowongan
 - [x] Tahap 4 — Pencari kerja & Admin Lapangan
-- [ ] Tahap 5 — Pencocokan & penyaluran
+- [x] Tahap 5 — Pencocokan & penyaluran
 - [ ] Tahap 6 — Pelatihan
 - [ ] Tahap 7 — Landing page & halaman publik
 - [ ] Tahap 8 — Dashboard, laporan, keamanan, dokumentasi
