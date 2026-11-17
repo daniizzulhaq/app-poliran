@@ -14,5 +14,10 @@ class DatabaseSeeder extends Seeder
             MasterDataSeeder::class,
             AkunDemoSeeder::class,
         ]);
+
+        // Data contoh (instansi, lowongan, pelatihan, pendaftar) hanya untuk lokal.
+        if (app()->environment('local')) {
+            $this->call(DataDemoSeeder::class);
+        }
     }
 }

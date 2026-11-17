@@ -6,8 +6,9 @@ use App\Models\Kecamatan;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-pest()->extend(Tests\TestCase::class)
+pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->beforeEach(fn () => $this->seed(RolePermissionSeeder::class))
     ->in('Feature');
@@ -25,7 +26,7 @@ function buatUser(Role $role, array $kecamatanIds = [], array $atribut = []): Us
 }
 
 /** Buat kecamatan beserta satu desa. */
-function buatKecamatan(string $nama = null): Kecamatan
+function buatKecamatan(?string $nama = null): Kecamatan
 {
     $kecamatan = Kecamatan::create(['nama' => $nama ?? 'Kec '.fake()->unique()->word()]);
     Desa::create(['kecamatan_id' => $kecamatan->id, 'nama' => 'Desa '.fake()->unique()->word()]);

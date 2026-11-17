@@ -64,6 +64,7 @@ class StatistikService
         $angka = PencariKerja::visibleTo($user)
             ->selectRaw('kecamatan_id, status, count(*) as total')
             ->groupBy('kecamatan_id', 'status')
+            ->toBase()
             ->get()
             ->groupBy('kecamatan_id');
 

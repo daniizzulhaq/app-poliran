@@ -9,7 +9,9 @@
 - [x] Tahap 5 — Pencocokan & penyaluran
 - [x] Tahap 6 — Pelatihan
 - [x] Tahap 7 — Landing page & halaman publik
-- [ ] Tahap 8 — Dashboard, laporan, keamanan, dokumentasi
+- [x] Tahap 8 — Dashboard, laporan & export, review keamanan, halaman error, DEPLOY.md, PANDUAN-ADMIN.md
+
+Test: 91 test Pest hijau (termasuk smoke test semua halaman untuk setiap akun demo).
 
 ## Keputusan (opsi paling sederhana bila spesifikasi tidak jelas)
 
@@ -17,7 +19,17 @@
 2. **Logo**: `public/images/logo-polres.svg` adalah logo sementara. Ganti dengan logo resmi (nama file sama, atau ubah di `resources/views/components/logo.blade.php`).
 3. **Zona waktu**: Asia/Makassar (WITA).
 4. **Database lokal & test**: MySQL/MariaDB (`poliran` dan `poliran_test`), karena driver SQLite tidak tersedia di PHP lokal.
-5. **Composer platform** dikunci ke PHP 8.3 agar dependency cocok dengan hosting cPanel.
+5. **Composer platform** dikunci ke PHP 8.3 agar dependency cocok dengan hosting cPanel. `public/build` ikut di-commit agar hosting tidak perlu Node.js.
 6. **Setelah daftar akun**, pengguna diarahkan ke dashboard (atau ke halaman yang tadi dituju, mis. form pendaftaran pelatihan). Dashboard menampilkan ajakan melengkapi profil / data verifikasi.
-7. **Admin Lapangan + izin pelatihan**: Super Admin mencentang "Boleh membuat & mengelola pelatihan" pada akun Admin Lapangan (permission langsung `kelola-pelatihan`).
+7. **Admin Lapangan + izin pelatihan**: Super Admin mencentang "Boleh membuat & mengelola pelatihan" pada akun Admin Lapangan (permission langsung `kelola-pelatihan`). Admin tersebut bisa mengelola semua pelatihan; seleksi peserta tetap dibatasi kecamatannya.
 8. **Pendaftar yang diinput admin** tidak punya akun login (`pencari_kerja.user_id` = null).
+9. **Data instansi** baru dibuat saat formulir verifikasi dikirim. Selama *menunggu survei* data tidak bisa diubah; setelah *ditolak* bisa diperbaiki & dikirim ulang; *terverifikasi* terkunci.
+10. **Ubah lowongan** hanya saat *menunggu survei* atau *ditolak*; setiap perubahan dikirim ulang ke antrian survei. Tutup manual: instansi pemilik, Super Admin, atau Admin Survei.
+11. **Admin Lapangan melihat semua lowongan aktif** (lowongan tidak terikat kecamatan), tetapi pendaftar cocok/penyaluran hanya dari kecamatannya.
+12. **Pencocokan**: lowongan tanpa syarat skill memberi 40 poin skill penuh; tanpa syarat pendidikan/umur memberi poin penuh. Kandidat yang ditampilkan hanya yang kategori (minat atau pelatihan yang diikuti) atau skill-nya beririsan dengan lowongan; maksimal 50 teratas. Pendaftar yang sudah pernah disalurkan ke lowongan yang sama tidak ditampilkan lagi di daftar cocok lowongan itu.
+13. **Status pendaftar "disalurkan"** tidak diturunkan oleh hasil pelatihan berikutnya.
+14. **Ubah status manual** oleh admin boleh ke status mana pun, catatan wajib.
+15. **Satu penyaluran per pasangan lowongan–pendaftar**.
+16. **Statistik publik** di-cache 10 menit. "Dilatih" = pendaftar yang pernah diterima/selesai pelatihan; "bersertifikat" = pendaftar yang punya sertifikat.
+17. **Data demo** (`DataDemoSeeder`: instansi, lowongan, pelatihan, pendaftar fiktif) hanya dijalankan bila `APP_ENV=local`.
+18. **Header keamanan** (X-Frame-Options, nosniff, Referrer-Policy) lewat middleware `SecurityHeaders`; disk `local` tidak disajikan langsung (`serve => false`).
