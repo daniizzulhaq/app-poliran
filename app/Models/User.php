@@ -2,48 +2,94 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use App\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, HasRoles, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name', 'email', 'phone', 'password', 'is_active', 'persetujuan_data_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    /** @var array<int, int>|null */
+    private ?array $kecamatanIdsCache = null;
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'persetujuan_data_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    public function instansi(): HasOne
+    {
+        return $this->hasOne(Instansi::class);
+    }
+
+    public function pencariKerja(): HasOne
+    {
+        return $this->hasOne(PencariKerja::class);
+    }
+
+    /** Kecamatan yang ditugaskan (khusus Admin Lapangan). */
+    public function kecamatan(): BelongsToMany
+    {
+        return $this->belongsToMany(Kecamatan::class, 'admin_kecamatan');
+    }
+
+    public function isRole(Role $role): bool
+    {
+        return $this->hasRole($role->value);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->isRole(Role::SuperAdmin);
+    }
+
+    public function isAdminLapangan(): bool
+    {
+        return $this->isRole(Role::AdminLapangan);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(array_map(fn (Role $r) => $r->value, Role::adminRoles()));
+    }
+
+    public function roleEnum(): ?Role
+    {
+        $name = $this->getRoleNames()->first();
+
+        return $name ? Role::tryFrom($name) : null;
+    }
+
+    /** @return array<int, int> */
+    public function kecamatanIds(): array
+    {
+        return $this->kecamatanIdsCache ??= $this->kecamatan()->pluck('kecamatan.id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    /** Apakah admin boleh mengelola data di kecamatan ini. */
+    public function bolehKelolaKecamatan(int $kecamatanId): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->isAdminLapangan() && in_array($kecamatanId, $this->kecamatanIds(), true);
     }
 }

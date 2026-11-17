@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Logo sementara. Ganti file ini dengan logo resmi Polres TTS (nama file sama). -->
+  <path d="M32 3 L57 12 V30 C57 45 46 56 32 61 C18 56 7 45 7 30 V12 Z" fill="#173a64" stroke="#e0a92a" stroke-width="3"/>
+  <path d="M32 16 l4.5 9.2 10.1 1.5-7.3 7.1 1.7 10-9-4.7-9 4.7 1.7-10-7.3-7.1 10.1-1.5z" fill="#f2c14e"/>
+</svg>

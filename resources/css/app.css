@@ -1,11 +1,43 @@
 @import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../../app/Enums/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    /* Warna utama: biru tua kepolisian + aksen emas */
+    --color-brand-50: #eef4fb;
+    --color-brand-100: #d6e4f5;
+    --color-brand-200: #adc8ea;
+    --color-brand-500: #2a5b96;
+    --color-brand-600: #1f4a7d;
+    --color-brand-700: #173a64;
+    --color-brand-800: #112c4c;
+    --color-brand-900: #0b1e34;
+    --color-gold-400: #f2c14e;
+    --color-gold-500: #e0a92a;
+    --color-gold-600: #b9861a;
+}
+
+@layer base {
+    [x-cloak] { display: none !important; }
+    body { @apply bg-slate-50 text-slate-800 antialiased; }
+    h1, h2, h3 { @apply text-slate-900; }
+}
+
+@layer components {
+    .form-control {
+        @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm
+            focus:border-brand-500 focus:ring-2 focus:ring-brand-200 focus:outline-none disabled:bg-slate-100;
+    }
+    .form-label { @apply mb-1 block text-sm font-medium text-slate-700; }
+    .table-base { @apply min-w-full divide-y divide-slate-200 text-sm; }
+    .table-base th { @apply bg-slate-50 px-3 py-2 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase; }
+    .table-base td { @apply px-3 py-2 align-top; }
+    .prose-simple p { @apply mb-3 leading-relaxed; }
 }
