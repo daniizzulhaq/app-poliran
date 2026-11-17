@@ -8,7 +8,7 @@
 - [x] Tahap 4 — Pencari kerja & Admin Lapangan
 - [x] Tahap 5 — Pencocokan & penyaluran
 - [x] Tahap 6 — Pelatihan
-- [ ] Tahap 7 — Landing page & halaman publik
+- [x] Tahap 7 — Landing page & halaman publik
 - [ ] Tahap 8 — Dashboard, laporan, keamanan, dokumentasi
 
 ## Keputusan (opsi paling sederhana bila spesifikasi tidak jelas)
