@@ -5,7 +5,7 @@
 - [x] Tahap 1 — Dasar: setup, auth, 5 role + permission, master data, akun admin + kecamatan, layout, komponen, file private, akun demo, semua migration
 - [x] Tahap 2 — Instansi & survei
 - [x] Tahap 3 — Lowongan
-- [ ] Tahap 4 — Pencari kerja & Admin Lapangan
+- [x] Tahap 4 — Pencari kerja & Admin Lapangan
 - [ ] Tahap 5 — Pencocokan & penyaluran
 - [ ] Tahap 6 — Pelatihan
 - [ ] Tahap 7 — Landing page & halaman publik
