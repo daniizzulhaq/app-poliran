@@ -11,6 +11,11 @@ class Kategori extends Model
 
     protected $fillable = ['nama', 'slug'];
 
+    public function pelatihan(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Pelatihan::class);
+    }
+
     protected static function booted(): void
     {
         static::saving(function (Kategori $kategori) {
