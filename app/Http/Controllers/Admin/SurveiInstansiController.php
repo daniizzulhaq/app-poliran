@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\JenisDokumen;
+use App\Enums\JenisInstansi;
 use App\Enums\StatusInstansi;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\InstansiPetugasRequest;
 use App\Http\Requests\Admin\SurveiRequest;
 use App\Models\Instansi;
 use App\Services\InstansiService;
@@ -29,10 +32,27 @@ class SurveiInstansiController extends Controller
         return view('admin.survei-instansi.index', compact('instansi', 'status', 'jumlah'));
     }
 
+    /** Petugas menginput instansi yang didatangi langsung (jemput bola). */
+    public function create(): View
+    {
+        return view('admin.survei-instansi.create', [
+            'jenisOptions' => JenisInstansi::options(),
+            'dokumenOptions' => JenisDokumen::options(),
+        ]);
+    }
+
+    public function store(InstansiPetugasRequest $request, InstansiService $service): RedirectResponse
+    {
+        $instansi = $service->buatOlehPetugas($request->user(), $request->validated(), $request->file('file_dokumen'), $request->file('file_selfie'));
+
+        return redirect()->route('admin.survei-instansi.show', $instansi)
+            ->with('success', 'Instansi disimpan dan terverifikasi. Sekarang lowongannya bisa diinput di menu Lowongan.');
+    }
+
     public function show(Instansi $instansi): View
     {
         $this->authorize('view', $instansi);
-        $instansi->load(['user', 'surveyor'])->loadCount('jobListings');
+        $instansi->load(['user', 'surveyor', 'pembuat'])->loadCount('jobListings');
 
         return view('admin.survei-instansi.show', compact('instansi'));
     }

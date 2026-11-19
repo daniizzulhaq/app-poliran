@@ -14,6 +14,12 @@ return [
     |
     */
 
+    // Data kecamatan & desa (kode Kemendagri). 53.02 = Kabupaten Timor Tengah Selatan.
+    'wilayah' => [
+        'url' => env('WILAYAH_API_URL', 'https://wilayah.id/api'),
+        'kabupaten' => env('WILAYAH_KABUPATEN', '53.02'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

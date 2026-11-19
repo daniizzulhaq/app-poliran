@@ -1,5 +1,7 @@
 <x-layouts.app title="Survei Instansi">
-    <x-page-header title="Survei Instansi" subtitle="Periksa data, dokumen, dan lokasi instansi yang mendaftar." />
+    <x-page-header title="Survei Instansi" subtitle="Periksa data, dokumen, dan lokasi instansi yang mendaftar.">
+        <x-button :href="route('admin.survei-instansi.create')">+ Tambah Instansi (Jemput Bola)</x-button>
+    </x-page-header>
 
     <div class="mb-4 flex flex-wrap gap-2">
         @foreach (\App\Enums\StatusInstansi::cases() as $s)
@@ -21,7 +23,7 @@
         <x-slot:head><th>Instansi</th><th>Jenis</th><th>Penanggung Jawab</th><th>Diajukan</th><th>Status</th><th></th></x-slot:head>
         @forelse ($instansi as $item)
             <tr>
-                <td class="font-medium">{{ $item->nama }}<div class="text-xs text-slate-500">{{ $item->user->email }}</div></td>
+                <td class="font-medium">{{ $item->nama }}<div class="text-xs text-slate-500">{{ $item->user?->email ?? 'Tanpa akun (diinput petugas)' }}</div></td>
                 <td>{{ $item->jenis->label() }}</td>
                 <td>{{ $item->penanggung_jawab }}</td>
                 <td class="whitespace-nowrap">{{ $item->diajukan_pada?->format('d/m/Y H:i') }}</td>

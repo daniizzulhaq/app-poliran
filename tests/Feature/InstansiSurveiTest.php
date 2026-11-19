@@ -84,3 +84,29 @@ it('admin lapangan dan instansi tidak bisa membuka antrian survei', function () 
     $this->actingAs(buatUser(Role::AdminLapangan))->get(route('admin.survei-instansi.index'))->assertForbidden();
     $this->actingAs(buatUser(Role::Instansi))->get(route('admin.survei-instansi.index'))->assertForbidden();
 });
+
+it('petugas survei bisa menginput instansi jemput bola tanpa akun dan langsung terverifikasi', function () {
+    $petugas = buatUser(Role::AdminSurvey);
+    $this->actingAs($petugas);
+
+    $this->get(route('admin.survei-instansi.create'))->assertOk()->assertSee('Foto penanggung jawab memegang KTP');
+    $this->post(route('admin.survei-instansi.store'), dataVerifikasi())->assertSessionHasErrors('catatan_survei');
+    $this->post(route('admin.survei-instansi.store'), dataVerifikasi(['catatan_survei' => 'Dikunjungi, usaha ada']))->assertSessionHasNoErrors();
+
+    $instansi = Instansi::firstOrFail();
+    expect($instansi->user_id)->toBeNull()
+        ->and($instansi->dibuat_oleh)->toBe($petugas->id)
+        ->and($instansi->status)->toBe(StatusInstansi::Terverifikasi)
+        ->and($instansi->disurvei_oleh)->toBe($petugas->id);
+    Storage::disk('local')->assertExists($instansi->file_dokumen);
+
+    $this->get(route('admin.survei-instansi.index', ['status' => 'terverifikasi']))->assertOk()->assertSee('Tanpa akun (diinput petugas)');
+    $this->get(route('admin.survei-instansi.show', $instansi))->assertOk()->assertSee('+ Input Lowongan');
+    $this->get(route('berkas.instansi', [$instansi, 'selfie']))->assertOk();
+});
+
+it('admin lapangan tidak bisa menginput instansi jemput bola', function () {
+    $this->actingAs(buatUser(Role::AdminLapangan))->post(route('admin.survei-instansi.store'), dataVerifikasi(['catatan_survei' => 'x']))
+        ->assertForbidden();
+    expect(Instansi::count())->toBe(0);
+});

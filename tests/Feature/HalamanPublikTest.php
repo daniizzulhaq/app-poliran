@@ -26,6 +26,7 @@ it('halaman awal tampil lengkap tanpa lowongan', function () {
         ->assertSee('Cara Daftar')
         ->assertSee('Yohana')
         ->assertSee('Kontak Layanan')
+        ->assertSee('Hati-hati Calo Kerja')->assertSee('110')
         ->assertDontSee('Lowongan Tidak Boleh Tampil');
 });
 

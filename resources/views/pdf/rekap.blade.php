@@ -35,6 +35,20 @@
         <tr>@foreach (\App\Enums\StatusPendaftar::cases() as $s)<td class="angka">{{ $perStatus[$s->value] }}</td>@endforeach<td class="angka">{{ array_sum($perStatus) }}</td></tr>
     </table>
 
+    <h3>Bertahan Bekerja (tindak lanjut pekerja tersalur, total tersalur: {{ $retensi['tersalur'] }})</h3>
+    <table>
+        <tr><th>Setelah mulai kerja</th><th class="angka">Masih bekerja</th><th class="angka">Berhenti</th><th class="angka">Tidak bisa dihubungi</th><th class="angka">% bertahan</th></tr>
+        @foreach ($retensi['bulan'] as $r)
+            <tr>
+                <td>Bulan ke-{{ $r['bulan'] }}</td>
+                <td class="angka">{{ $r['masih_bekerja'] }}</td>
+                <td class="angka">{{ $r['berhenti'] }}</td>
+                <td class="angka">{{ $r['tidak_terhubung'] }}</td>
+                <td class="angka">{{ $r['persen'] === null ? '-' : $r['persen'].'%' }}</td>
+            </tr>
+        @endforeach
+    </table>
+
     <h3>Per Kecamatan</h3>
     <table>
         <tr><th>Kecamatan</th>@foreach (\App\Enums\StatusPendaftar::cases() as $s)<th class="angka">{{ $s->label() }}</th>@endforeach<th class="angka">Total</th></tr>

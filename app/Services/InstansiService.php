@@ -50,6 +50,37 @@ class InstansiService
         });
     }
 
+    /**
+     * Instansi yang didatangi langsung oleh petugas (jemput bola): tanpa akun, langsung terverifikasi.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function buatOlehPetugas(User $petugas, array $data, UploadedFile $dokumen, UploadedFile $selfie): Instansi
+    {
+        return DB::transaction(function () use ($petugas, $data, $dokumen, $selfie) {
+            return Instansi::create([
+                'user_id' => null,
+                'dibuat_oleh' => $petugas->id,
+                'nama' => $data['nama'],
+                'jenis' => $data['jenis'],
+                'penanggung_jawab' => $data['penanggung_jawab'],
+                'alamat' => $data['alamat'],
+                'no_wa' => $data['no_wa'],
+                'jenis_dokumen' => $data['jenis_dokumen'],
+                'nomor_dokumen' => $data['nomor_dokumen'],
+                'file_dokumen' => $this->files->simpanPrivate($dokumen, 'instansi/dokumen'),
+                'file_selfie' => $this->files->simpanPrivate($selfie, 'instansi/selfie'),
+                'latitude' => $data['latitude'],
+                'longitude' => $data['longitude'],
+                'status' => StatusInstansi::Terverifikasi,
+                'catatan_survei' => $data['catatan_survei'],
+                'disurvei_oleh' => $petugas->id,
+                'disurvei_pada' => now(),
+                'diajukan_pada' => now(),
+            ]);
+        });
+    }
+
     public function putuskan(Instansi $instansi, User $surveyor, bool $diterima, ?string $catatan, ?string $alasanTolak): void
     {
         $instansi->update([

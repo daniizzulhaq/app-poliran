@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\StatusInstansi;
 use App\Enums\StatusLowongan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\LowonganPetugasRequest;
+use App\Models\Instansi;
 use App\Models\JobListing;
 use App\Models\Kategori;
 use App\Services\JobListingService;
 use App\Services\JobMatcher;
+use App\Support\OpsiForm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -34,6 +38,25 @@ class LowonganController extends Controller
             'status' => $status ?? StatusLowongan::Aktif,
             'kategori' => Kategori::orderBy('nama')->pluck('nama', 'id')->all(),
         ]);
+    }
+
+    /** Petugas survei menginput lowongan atas nama instansi terverifikasi (jemput bola). */
+    public function create(): View
+    {
+        return view('instansi.lowongan.form', [
+            'lowongan' => new JobListing(['kuota' => 1]),
+            'petugas' => true,
+            'instansiOptions' => Instansi::where('status', StatusInstansi::Terverifikasi)->orderBy('nama')->pluck('nama', 'id')->all(),
+            ...OpsiForm::lowongan(),
+        ]);
+    }
+
+    public function store(LowonganPetugasRequest $request, JobListingService $service): RedirectResponse
+    {
+        $instansi = Instansi::findOrFail($request->integer('instansi_id'));
+        $lowongan = $service->buatOlehPetugas($instansi, $request->validated(), $request->user());
+
+        return redirect()->route('admin.lowongan.show', $lowongan)->with('success', 'Lowongan disimpan dan langsung aktif. Cocokkan dengan pendaftar di tab Pendaftar Cocok.');
     }
 
     public function show(Request $request, JobListing $lowongan, JobMatcher $matcher): View

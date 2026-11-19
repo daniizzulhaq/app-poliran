@@ -7,10 +7,12 @@ use App\Http\Requests\Admin\DesaRequest;
 use App\Http\Requests\Admin\KecamatanRequest;
 use App\Models\Desa;
 use App\Models\Kecamatan;
-use App\Models\PencariKerja;
 use App\Models\Pelatihan;
+use App\Models\PencariKerja;
+use App\Services\WilayahImporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Throwable;
 
 class KecamatanController extends Controller
 {
@@ -19,6 +21,22 @@ class KecamatanController extends Controller
         $kecamatan = Kecamatan::withCount('desa')->orderBy('nama')->paginate(30);
 
         return view('admin.master.kecamatan', compact('kecamatan'));
+    }
+
+    /** Tambahkan kecamatan & desa TTS yang belum ada dari API wilayah (kode Kemendagri). */
+    public function sinkronkan(WilayahImporter $importer): RedirectResponse
+    {
+        try {
+            $data = $importer->dariApi();
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Gagal mengambil data dari server wilayah. Periksa koneksi internet server lalu coba lagi.');
+        }
+
+        $baru = $importer->simpan($data);
+
+        return back()->with('success', "Sinkron selesai. Ditambahkan {$baru['kecamatan']} kecamatan dan {$baru['desa']} desa baru.");
     }
 
     public function store(KecamatanRequest $request): RedirectResponse

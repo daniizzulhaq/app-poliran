@@ -15,7 +15,7 @@ Test: 91 test Pest hijau (termasuk smoke test semua halaman untuk setiap akun de
 
 ## Keputusan (opsi paling sederhana bila spesifikasi tidak jelas)
 
-1. **Data wilayah contoh**: `database/data/wilayah_tts.csv` berisi nama *placeholder* ("Kecamatan Contoh A", "Desa Contoh A1", dst.) agar tidak mengarang nama kecamatan/desa TTS. Ganti dengan data asli, format: `kode_kecamatan,nama_kecamatan,kode_desa,nama_desa`.
+1. **Data wilayah**: 32 kecamatan & 278 desa/kelurahan TTS dari API wilayah.id (kode Kemendagri 53.02; API emsifa tidak dipakai karena memakai kode BPS, di sana 5302 = Sumba Timur). Disalin ke `database/data/wilayah_tts.csv` agar seeding tidak butuh internet. `wilayah:impor` / tombol Sinkronkan hanya menambah data baru, cocokkan berdasarkan kode lalu nama, dan tidak menimpa nama yang diubah admin. Nama huruf kapital dirapikan ("KI'E" → "Ki'e").
 2. **Logo**: `public/images/logo-polres.svg` adalah logo sementara. Ganti dengan logo resmi (nama file sama, atau ubah di `resources/views/components/logo.blade.php`).
 3. **Zona waktu**: Asia/Makassar (WITA).
 4. **Database lokal & test**: MySQL/MariaDB (`poliran` dan `poliran_test`), karena driver SQLite tidak tersedia di PHP lokal.
@@ -33,3 +33,10 @@ Test: 91 test Pest hijau (termasuk smoke test semua halaman untuk setiap akun de
 16. **Statistik publik** di-cache 10 menit. "Dilatih" = pendaftar yang pernah diterima/selesai pelatihan; "bersertifikat" = pendaftar yang punya sertifikat.
 17. **Data demo** (`DataDemoSeeder`: instansi, lowongan, pelatihan, pendaftar fiktif) hanya dijalankan bila `APP_ENV=local`.
 18. **Header keamanan** (X-Frame-Options, nosniff, Referrer-Policy) lewat middleware `SecurityHeaders`; disk `local` tidak disajikan langsung (`serve => false`).
+19. **Tahapan penyaluran**: Merekrut → Melatih (Bersertifikat / Non Bersertifikat) → Menyalurkan; pelatihan boleh dilewati; Tidak Diterima bisa dipilih sebelum Menyalurkan. Status pendaftar ikut naik tetapi tidak pernah diturunkan (`StatusPendaftar::tingkat()`).
+20. **Tindak lanjut kerja** pada bulan ke-1, 3, 6 setelah tanggal mulai kerja, berurutan, hanya setelah jatuh tempo. Berhenti bekerja (alasan wajib) → pendaftar kembali ke status sebelum disalurkan (yang dulu hanya "direkrut" kembali "terdaftar") sehingga ikut pencocokan lagi; jumlah tersalur lowongan tidak dikurangi. % bertahan = masih bekerja ÷ (masih bekerja + berhenti).
+21. **Persetujuan data**: pendaftar mandiri tercatat "daring" (centang saat daftar akun); input petugas wajib centang + cara (lisan/tertulis). Data lama tanpa persetujuan ditandai "Belum tercatat" dan bisa dicatat saat ubah data.
+22. **Pendaftar menunggu lama**: status terdaftar, tanpa perubahan status dan tanpa penyaluran berjalan > 30 hari (`PencariKerja::BATAS_HARI_MENUNGGU`).
+23. **Lowongan luar TTS / luar negeri**: ACC wajib centang pemeriksaan legalitas (`legalitas_diperiksa_pada`); luar negeri wajib nomor izin P3MI. Menolak tidak perlu centang.
+24. **Jemput bola**: Admin Survei/Super Admin bisa menginput instansi tanpa akun (`instansi.user_id` null, langsung terverifikasi) dan menginput lowongan untuk instansi terverifikasi (langsung aktif, petugas = surveyor).
+25. **Pesan WA siap kirim**: tautan `wa.me/...?text=` berisi template (`App\Support\PesanWa`); aplikasi tetap tidak mengirim pesan otomatis.

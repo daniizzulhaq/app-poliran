@@ -30,7 +30,9 @@ class SurveiLowonganController extends Controller
     {
         $this->authorize('survei', $lowongan);
 
-        $service->putuskan($lowongan, $request->user(), $request->diterima(), $request->catatan_survei, $request->alasan_tolak);
+        $service->putuskan(
+            $lowongan, $request->user(), $request->diterima(), $request->catatan_survei, $request->alasan_tolak, $request->boolean('legalitas_diperiksa'),
+        );
 
         return redirect()->route('admin.survei-lowongan.index')
             ->with('success', $request->diterima() ? 'Lowongan disetujui dan sekarang aktif.' : 'Lowongan ditolak.');

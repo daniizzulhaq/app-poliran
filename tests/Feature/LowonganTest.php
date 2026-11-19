@@ -2,6 +2,7 @@
 
 use App\Enums\Role;
 use App\Enums\StatusLowongan;
+use App\Enums\WilayahKerja;
 use App\Models\Instansi;
 use App\Models\JobListing;
 use App\Models\Kategori;
@@ -12,7 +13,7 @@ function dataLowongan(array $ubah = []): array
     return array_merge([
         'judul' => 'Tukang Batu', 'kategori_id' => Kategori::firstOrCreate(['nama' => 'Bangunan'])->id,
         'skills' => [Skill::firstOrCreate(['nama' => 'Tukang Batu'])->id], 'jobdesk' => 'Membangun rumah',
-        'gaji_min' => '2500000', 'gaji_max' => '3000000', 'tipe_kerja' => 'harian', 'lokasi_kerja' => 'SoE',
+        'gaji_min' => '2500000', 'gaji_max' => '3000000', 'tipe_kerja' => 'harian', 'lokasi_kerja' => 'SoE', 'wilayah_kerja' => 'dalam_tts',
         'kuota' => 3, 'batas_tanggal' => now()->addWeek()->toDateString(),
     ], $ubah);
 }
@@ -123,4 +124,73 @@ it('lowongan ditolak bisa diubah dan dikirim ulang', function () {
     $this->actingAs($lowongan->instansi->user)
         ->put(route('instansi.lowongan.update', $lowongan), dataLowongan())->assertRedirect();
     expect($lowongan->fresh()->status)->toBe(StatusLowongan::MenungguSurvey);
+});
+
+it('lowongan luar negeri wajib mencantumkan izin P3MI', function () {
+    $instansi = Instansi::factory()->terverifikasi()->create();
+    $this->actingAs($instansi->user);
+
+    $this->post(route('instansi.lowongan.store'), dataLowongan(['wilayah_kerja' => 'luar_negeri']))->assertSessionHasErrors('nomor_izin_p3mi');
+    $this->post(route('instansi.lowongan.store'), dataLowongan(['wilayah_kerja' => 'luar_negeri', 'nomor_izin_p3mi' => 'SIP3MI-123']))
+        ->assertSessionHasNoErrors();
+
+    $lowongan = JobListing::firstOrFail();
+    expect($lowongan->wilayah_kerja)->toBe(WilayahKerja::LuarNegeri)->and($lowongan->nomor_izin_p3mi)->toBe('SIP3MI-123');
+});
+
+it('izin P3MI dikosongkan bila lowongan bukan luar negeri', function () {
+    $instansi = Instansi::factory()->terverifikasi()->create();
+    $this->actingAs($instansi->user)
+        ->post(route('instansi.lowongan.store'), dataLowongan(['wilayah_kerja' => 'luar_tts', 'nomor_izin_p3mi' => 'ABC']))
+        ->assertSessionHasNoErrors();
+
+    expect(JobListing::firstOrFail()->nomor_izin_p3mi)->toBeNull();
+});
+
+it('lowongan luar TTS hanya bisa di-ACC setelah legalitas diperiksa', function () {
+    $lowongan = JobListing::factory()->create(['wilayah_kerja' => 'luar_tts']);
+    $this->actingAs(buatUser(Role::AdminSurvey));
+
+    $this->get(route('admin.lowongan.show', $lowongan))->assertOk()->assertSee('rawan calo/TPPO')->assertSee('Biaya perjalanan');
+    $this->post(route('admin.survei-lowongan.putusan', $lowongan), ['keputusan' => 'terima'])->assertSessionHasErrors('legalitas_diperiksa');
+    expect($lowongan->fresh()->status)->toBe(StatusLowongan::MenungguSurvey);
+
+    // Menolak tidak butuh centang legalitas.
+    $tolak = JobListing::factory()->create(['wilayah_kerja' => 'luar_negeri']);
+    $this->post(route('admin.survei-lowongan.putusan', $tolak), ['keputusan' => 'tolak', 'alasan_tolak' => 'Izin tidak sah'])->assertSessionHasNoErrors();
+
+    $this->post(route('admin.survei-lowongan.putusan', $lowongan), ['keputusan' => 'terima', 'legalitas_diperiksa' => '1'])->assertSessionHasNoErrors();
+    expect($lowongan->fresh()->status)->toBe(StatusLowongan::Aktif)
+        ->and($lowongan->fresh()->legalitas_diperiksa_pada)->not->toBeNull();
+});
+
+it('petugas survei bisa menginput lowongan untuk instansi terverifikasi dan langsung aktif', function () {
+    $instansi = Instansi::factory()->terverifikasi()->create();
+    $belum = Instansi::factory()->create();
+    $petugas = buatUser(Role::AdminSurvey);
+    $this->actingAs($petugas);
+
+    $this->get(route('admin.lowongan.create', ['instansi_id' => $instansi->id]))->assertOk()->assertSee($instansi->nama)->assertDontSee($belum->nama);
+    $this->post(route('admin.lowongan.store'), dataLowongan(['instansi_id' => $belum->id]))->assertSessionHasErrors('instansi_id');
+    $this->post(route('admin.lowongan.store'), dataLowongan(['instansi_id' => $instansi->id, 'wilayah_kerja' => 'luar_tts']))
+        ->assertSessionHasErrors('legalitas_diperiksa');
+
+    $this->post(route('admin.lowongan.store'), dataLowongan(['instansi_id' => $instansi->id, 'catatan_survei' => 'Bertemu pemilik']))
+        ->assertSessionHasNoErrors();
+
+    $lowongan = JobListing::firstOrFail();
+    expect($lowongan->status)->toBe(StatusLowongan::Aktif)
+        ->and($lowongan->instansi_id)->toBe($instansi->id)
+        ->and($lowongan->dibuat_oleh)->toBe($petugas->id)
+        ->and($lowongan->disurvei_oleh)->toBe($petugas->id)
+        ->and($lowongan->catatan_survei)->toContain('Bertemu pemilik')
+        ->and($lowongan->skills)->toHaveCount(1);
+});
+
+it('admin lapangan dan instansi tidak bisa menginput lowongan sebagai petugas', function () {
+    $instansi = Instansi::factory()->terverifikasi()->create();
+
+    $this->actingAs(buatUser(Role::AdminLapangan))->get(route('admin.lowongan.create'))->assertForbidden();
+    $this->actingAs($instansi->user)->post(route('admin.lowongan.store'), dataLowongan(['instansi_id' => $instansi->id]))->assertForbidden();
+    expect(JobListing::count())->toBe(0);
 });

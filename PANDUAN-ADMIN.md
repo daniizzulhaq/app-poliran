@@ -11,13 +11,13 @@ Masuk di `/masuk`. Menu di sisi kiri menyesuaikan peran Anda. Semua informasi st
 - *Admin Lapangan*: centang kecamatan tugasnya (boleh lebih dari satu). Centang "Boleh membuat & mengelola pelatihan" bila perlu.
 - Nonaktifkan akun yang tidak dipakai (hilangkan centang "Akun aktif").
 
-**Kecamatan & Desa / Kategori / Skill** — data master. Klik nama kecamatan untuk mengelola desanya. Data yang sudah dipakai tidak bisa dihapus.
+**Kecamatan & Desa / Kategori / Skill** — data master. Kecamatan & desa TTS sudah terisi sesuai kode Kemendagri (32 kecamatan); bila ada pemekaran, klik **Sinkronkan Data Wilayah**. Klik nama kecamatan untuk mengelola desanya. Data yang sudah dipakai tidak bisa dihapus.
 
 **Pelatihan** — Buat Pelatihan (tersimpan sebagai *Draft*) → buka detail → ubah status ke *Dibuka* agar tampil di halaman publik. *Ditutup* = pendaftaran berhenti, *Selesai* = pelatihan selesai.
 
 **Konten Halaman Awal & Cerita Sukses** — ubah judul hero, sambutan & foto Kapolres, penjelasan program, kontak (termasuk titik peta), dan testimoni.
 
-**Laporan & Export** — rekap per kecamatan & status. Unduh Excel (rekap + daftar pendaftar, NIK disensor) atau PDF.
+**Laporan & Export** — rekap per kecamatan & status, serta tabel **Bertahan Bekerja** (berapa persen pekerja tersalur yang masih bekerja di bulan ke-1, 3, 6). Unduh Excel (rekap + daftar pendaftar, NIK disensor) atau PDF.
 
 Super Admin juga bisa melakukan semua tugas admin lain untuk semua kecamatan.
 
@@ -30,10 +30,15 @@ Super Admin juga bisa melakukan semua tugas admin lain untuk semua kecamatan.
 2. Periksa data, buka berkas KTP/NIB dan selfie, lihat lokasi di peta (tombol **Buka di Google Maps** untuk navigasi ke lokasi).
 3. Isi catatan survei, pilih **ACC** atau **Tolak** (alasan wajib — akan dibaca instansi agar bisa memperbaiki dan mengirim ulang).
 
+**Jemput bola** — usaha yang Anda datangi langsung dan belum punya akun:
+1. **Survei Instansi** → **+ Tambah Instansi (Jemput Bola)**: isi data, foto KTP/NIB, foto penanggung jawab memegang KTP, pin lokasi, dan catatan survei. Instansi langsung *Terverifikasi*.
+2. Di detail instansi (atau menu **Lowongan** → **+ Input Lowongan**) isi lowongannya. Lowongan langsung *Aktif* atas nama Anda.
+
 **Survei Lowongan**
 1. Klik **Survei** pada lowongan.
 2. Periksa: gaji wajar? tidak meminta uang dari pelamar? bukan penipuan?
-3. ACC (lowongan jadi *Aktif*) atau Tolak dengan alasan.
+3. Lowongan **luar TTS** atau **luar negeri** diberi tanda kuning/merah dan daftar periksa (kontrak tertulis, biaya perjalanan tidak dipotong gaji, KTP/ijazah asli tidak ditahan; luar negeri: izin P3MI resmi dan visa kerja). ACC hanya bisa setelah Anda mencentang bahwa legalitas sudah diperiksa.
+4. ACC (lowongan jadi *Aktif*) atau Tolak dengan alasan.
 
 Lowongan yang sudah aktif bisa ditutup manual dengan tombol **Tutup Lowongan**.
 
@@ -45,15 +50,26 @@ Anda hanya melihat pendaftar dari kecamatan tugas Anda.
 
 **Pendaftar**
 - Pendaftar baru yang mendaftar sendiri otomatis muncul di sini (status *Terdaftar*).
-- **Tambah Pendaftar Manual** untuk warga yang tidak bisa mendaftar sendiri (tanpa akun login).
+- **Tambah Pendaftar Manual** untuk warga yang tidak bisa mendaftar sendiri (tanpa akun login). Jelaskan dulu bahwa datanya disimpan untuk program POLIRAN, lalu centang **persetujuan warga** dan pilih caranya (lisan / tertulis) — wajib.
+- Filter status **Belum diproses > 30 hari** (juga di dashboard) menampilkan warga yang lama tidak ada perkembangan, supaya tidak terlupakan.
 - Di detail pendaftar: lihat data, CV, riwayat status; **Ubah Status** (catatan wajib — semua perubahan tercatat).
 - Alur status: Terdaftar → Direkrut → Dilatih → Bersertifikat / Non Bersertifikat → Disalurkan.
 
 **Pencocokan & Penyaluran**
 1. Menu **Lowongan** → buka lowongan aktif → tab **Pendaftar Cocok** (urut skor 0–100, dengan rincian kategori/skill/pendidikan/umur). Atau dari detail pendaftar, panel **Lowongan Cocok**.
-2. Klik **Salurkan ke lowongan ini** → status penyaluran *Diproses*.
-3. Hubungi instansi & pendaftar lewat tombol **WA / Telepon** di menu **Penyaluran**.
-4. Catat hasil: **Diterima kerja** → status pendaftar otomatis *Disalurkan*, jumlah tersalur lowongan +1, lowongan otomatis *Terpenuhi* bila kuota penuh. **Tidak diterima** → pendaftar bisa disalurkan ke lowongan lain.
+2. Klik **Salurkan ke lowongan ini** → penyaluran masuk tahap *Merekrut* (status pendaftar *Direkrut*).
+3. Hubungi instansi & pendaftar lewat tombol **WA (pesan siap kirim)** / Telepon di menu **Penyaluran**. Pesan WhatsApp sudah terisi sesuai tahap; periksa lalu tekan kirim.
+4. Pilih **tahap berikutnya** di menu Penyaluran:
+   - **Melatih – bersertifikat** bila dilatih lembaga/instansi formal (status pendaftar *Bersertifikat*), atau **Melatih – non bersertifikat** bila tidak (status *Non Bersertifikat*). Tahap ini boleh dilewati.
+   - **Menyalurkan (diterima kerja)** → isi tanggal mulai kerja (dan gaji bila tahu). Status pendaftar *Disalurkan*, jumlah tersalur lowongan +1, lowongan otomatis *Terpenuhi* bila kuota penuh.
+   - **Tidak diterima (batal)** → bisa dipilih di tahap mana pun sebelum Menyalurkan; pendaftar bisa disalurkan ke lowongan lain.
+   - Status pendaftar tidak pernah diturunkan: pendaftar yang sudah *Bersertifikat* dari pelatihan tetap *Bersertifikat* saat direkrut.
+
+**Tindak Lanjut Kerja**
+1. Menu **Tindak Lanjut Kerja** → tab *Jatuh tempo* berisi pekerja yang sudah 1, 3, atau 6 bulan bekerja dan belum ditanya kabarnya.
+2. Hubungi lewat **WA pekerja (pesan siap kirim)** atau telepon.
+3. Catat hasil: **Masih bekerja**, **Berhenti bekerja** (alasan wajib), atau **Tidak bisa dihubungi**.
+4. Pekerja yang berhenti otomatis kembali ke daftar pencari kerja (status pelatihan/sertifikatnya tetap) dan bisa dicocokkan dengan lowongan lain.
 
 **Peserta Pelatihan**
 1. Pilih pelatihan → **Terima** / **Tolak** peserta (diterima → status pendaftar *Dilatih*).
@@ -70,6 +86,7 @@ Anda hanya melihat pendaftar dari kecamatan tugas Anda.
 - **Instansi**: Daftar → isi data verifikasi + selfie KTP + pin lokasi → tunggu survei → setelah terverifikasi upload lowongan → lihat status lowongan, jumlah tersalur, dan nama pekerja yang disalurkan.
 - Lowongan tidak diumumkan ke publik; pencari kerja tidak melamar langsung — penyaluran dilakukan petugas.
 - Program **gratis**. Petugas tidak pernah meminta uang.
+- **Waspada calo & perdagangan orang**: jangan serahkan KTP/ijazah asli, kerja luar negeri hanya lewat perusahaan penempatan (P3MI) resmi, laporkan perekrut mencurigakan ke Polres atau 110. Materi ini juga tampil di halaman awal dan halaman Tentang.
 
 ## Keamanan data
 

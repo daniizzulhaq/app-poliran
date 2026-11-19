@@ -18,30 +18,7 @@
         <form method="POST" action="{{ route('instansi.verifikasi.update') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
-            <x-card title="Data Instansi / Usaha">
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <x-input label="Nama instansi / usaha" name="nama" :value="$instansi?->nama" required />
-                    <x-select label="Jenis" name="jenis" :options="$jenisOptions" :value="$instansi?->jenis" required />
-                    <x-input label="Nama penanggung jawab" name="penanggung_jawab" :value="$instansi?->penanggung_jawab ?? $user->name" required />
-                    <x-input label="No. WhatsApp" name="no_wa" :value="$instansi?->no_wa ?? $user->phone" required />
-                    <x-textarea label="Alamat lengkap" name="alamat" :value="$instansi?->alamat" required class="sm:col-span-2" />
-                </div>
-            </x-card>
-
-            <x-card title="Dokumen">
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <x-select label="Jenis dokumen" name="jenis_dokumen" :options="$dokumenOptions" :value="$instansi?->jenis_dokumen" required />
-                    <x-input label="Nomor KTP / NIB" name="nomor_dokumen" :value="$instansi?->nomor_dokumen" required />
-                    <x-file-input label="Upload KTP atau NIB" name="file_dokumen" accept=".jpg,.jpeg,.png,.pdf" :required="! $instansi"
-                        hint="Foto/PDF, maksimal 4 MB." :current="$instansi ? route('berkas.instansi', [$instansi, 'dokumen']) : null" />
-                    <x-file-input label="Foto selfie memegang KTP" name="file_selfie" accept=".jpg,.jpeg,.png" :required="! $instansi"
-                        hint="Wajah dan KTP harus terlihat jelas. Maksimal 4 MB." :current="$instansi ? route('berkas.instansi', [$instansi, 'selfie']) : null" />
-                </div>
-            </x-card>
-
-            <x-card title="Lokasi Usaha">
-                <x-map-picker label="Pin lokasi usaha" :lat="$instansi?->latitude" :lng="$instansi?->longitude" />
-            </x-card>
+            @include('instansi.partials.form-instansi', ['namaPj' => $user->name, 'waDefault' => $user->phone])
 
             <x-button size="lg">{{ $instansi ? 'Kirim Ulang untuk Disurvei' : 'Kirim untuk Disurvei' }}</x-button>
         </form>

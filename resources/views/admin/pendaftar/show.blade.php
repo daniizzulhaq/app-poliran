@@ -20,6 +20,14 @@
                             <a href="tel:{{ $pencari->no_wa }}" class="ml-2 text-brand-600 hover:underline">Telepon</a>
                         @endif
                     </x-detail>
+                    <x-detail label="Persetujuan data">
+                        @if ($pencari->persetujuan_pada)
+                            {{ $pencari->persetujuan_cara->label() }} · {{ $pencari->persetujuan_pada->format('d/m/Y') }}
+                        @else
+                            <span class="text-amber-700">Belum tercatat.</span>
+                            @can('update', $pencari)<a href="{{ route('admin.pendaftar.edit', $pencari) }}" class="ml-1 text-brand-600 hover:underline">Catat persetujuan</a>@endcan
+                        @endif
+                    </x-detail>
                     <x-detail label="Kategori minat">{{ $pencari->kategori->pluck('nama')->implode(', ') }}</x-detail>
                     <x-detail label="Skill">{{ $pencari->skills->pluck('nama')->implode(', ') }}</x-detail>
                     <x-detail label="Kemampuan lain">{{ $pencari->kemampuan_lain }}</x-detail>

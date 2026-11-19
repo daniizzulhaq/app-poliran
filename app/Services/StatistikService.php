@@ -6,11 +6,15 @@ use App\Enums\StatusInstansi;
 use App\Enums\StatusLowongan;
 use App\Enums\StatusPelatihan;
 use App\Enums\StatusPendaftar;
+use App\Enums\StatusPenyaluran;
+use App\Enums\StatusTindakLanjut;
 use App\Models\Instansi;
 use App\Models\JobListing;
 use App\Models\Kecamatan;
 use App\Models\Pelatihan;
 use App\Models\PencariKerja;
+use App\Models\Penyaluran;
+use App\Models\TindakLanjut;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -77,6 +81,44 @@ class StatistikService
 
                 return ['kecamatan' => $k->nama, 'total' => array_sum($status), 'status' => $status];
             });
+    }
+
+    /**
+     * Bertahan bekerja: hasil tindak lanjut bulan ke-1, 3, 6 pekerja tersalur.
+     * Persen = masih bekerja / (masih bekerja + berhenti); yang tidak bisa dihubungi tidak dihitung.
+     *
+     * @return array{tersalur: int, bulan: array<int, array{bulan: int, masih_bekerja: int, berhenti: int, tidak_terhubung: int, persen: int|null}>}
+     */
+    public function retensi(User $user): array
+    {
+        $terlihat = fn ($q) => $q->visibleTo($user);
+
+        $angka = TindakLanjut::query()
+            ->whereHas('penyaluran.pencariKerja', $terlihat)
+            ->selectRaw('bulan_ke, status, count(*) as total')
+            ->groupBy('bulan_ke', 'status')
+            ->toBase()
+            ->get()
+            ->groupBy('bulan_ke');
+
+        $bulan = array_map(function (int $b) use ($angka) {
+            $baris = $angka->get($b, collect())->pluck('total', 'status');
+            $masih = (int) ($baris[StatusTindakLanjut::MasihBekerja->value] ?? 0);
+            $berhenti = (int) ($baris[StatusTindakLanjut::Berhenti->value] ?? 0);
+
+            return [
+                'bulan' => $b,
+                'masih_bekerja' => $masih,
+                'berhenti' => $berhenti,
+                'tidak_terhubung' => (int) ($baris[StatusTindakLanjut::TidakTerhubung->value] ?? 0),
+                'persen' => $masih + $berhenti > 0 ? (int) round($masih / ($masih + $berhenti) * 100) : null,
+            ];
+        }, TindakLanjut::BULAN);
+
+        return [
+            'tersalur' => Penyaluran::where('status', StatusPenyaluran::Menyalurkan)->whereHas('pencariKerja', $terlihat)->count(),
+            'bulan' => $bulan,
+        ];
     }
 
     /** @return array<string, int> */

@@ -1,6 +1,11 @@
 <x-layouts.app :title="'Survei: '.$instansi->nama">
     <x-page-header :title="$instansi->nama" :back="route('admin.survei-instansi.index', ['status' => $instansi->status->value])">
         <x-status :status="$instansi->status" class="text-sm" />
+        @if ($instansi->isTerverifikasi())
+            @can('survei-lowongan')
+                <x-button :href="route('admin.lowongan.create', ['instansi_id' => $instansi->id])" size="sm">+ Input Lowongan</x-button>
+            @endcan
+        @endif
     </x-page-header>
 
     <div class="grid gap-4 lg:grid-cols-3">
@@ -13,7 +18,7 @@
                         {{ $instansi->no_wa }}
                         <a href="https://wa.me/{{ \App\Models\PencariKerja::formatWa($instansi->no_wa) }}" target="_blank" rel="noopener" class="ml-2 text-green-700 hover:underline">Chat WA</a>
                     </x-detail>
-                    <x-detail label="Email akun">{{ $instansi->user->email }}</x-detail>
+                    <x-detail label="Email akun">{{ $instansi->user?->email ?? 'Tanpa akun - diinput petugas '.($instansi->pembuat?->name ?? '') }}</x-detail>
                     <x-detail label="Alamat">{{ $instansi->alamat }}</x-detail>
                     <x-detail label="Dokumen">{{ $instansi->jenis_dokumen->label() }} - {{ $instansi->nomor_dokumen }}</x-detail>
                     <x-detail label="Diajukan">{{ $instansi->diajukan_pada?->format('d/m/Y H:i') }}</x-detail>

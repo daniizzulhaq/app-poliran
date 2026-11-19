@@ -6,6 +6,7 @@ use App\Enums\JenisKelamin;
 use App\Enums\Pendidikan;
 use App\Enums\StatusLowongan;
 use App\Enums\TipeKerja;
+use App\Enums\WilayahKerja;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,8 +20,10 @@ class JobListing extends Model
 
     protected $table = 'job_listings';
 
+    protected $attributes = ['wilayah_kerja' => 'dalam_tts'];
+
     protected $fillable = [
-        'instansi_id', 'kategori_id', 'judul', 'jobdesk', 'pendidikan_min', 'umur_min', 'umur_max', 'jenis_kelamin',
+        'instansi_id', 'dibuat_oleh', 'wilayah_kerja', 'nomor_izin_p3mi', 'legalitas_diperiksa_pada', 'kategori_id', 'judul', 'jobdesk', 'pendidikan_min', 'umur_min', 'umur_max', 'jenis_kelamin',
         'pengalaman', 'syarat_lain', 'gaji_min', 'gaji_max', 'gaji_nego', 'fasilitas', 'ketentuan_lain', 'tipe_kerja',
         'lokasi_kerja', 'kuota', 'jumlah_tersalur', 'batas_tanggal', 'status', 'catatan_survei', 'alasan_tolak',
         'disurvei_oleh', 'disurvei_pada', 'ditutup_oleh', 'ditutup_pada',
@@ -32,7 +35,9 @@ class JobListing extends Model
             'pendidikan_min' => Pendidikan::class,
             'jenis_kelamin' => JenisKelamin::class,
             'tipe_kerja' => TipeKerja::class,
+            'wilayah_kerja' => WilayahKerja::class,
             'status' => StatusLowongan::class,
+            'legalitas_diperiksa_pada' => 'datetime',
             'gaji_nego' => 'boolean',
             'umur_min' => 'integer',
             'umur_max' => 'integer',
@@ -69,6 +74,12 @@ class JobListing extends Model
     public function surveyor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'disurvei_oleh');
+    }
+
+    /** Petugas yang menginput lowongan (jemput bola); null bila diunggah instansi sendiri. */
+    public function pembuat(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh');
     }
 
     /** Lowongan aktif: status aktif dan belum lewat batas tanggal (dicek saat query). */

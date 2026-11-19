@@ -10,7 +10,10 @@
         <x-slot:head><th>Lowongan</th><th>Instansi</th><th>Kategori</th><th>Gaji</th><th>Kuota</th><th>Dikirim</th><th></th></x-slot:head>
         @forelse ($lowongan as $item)
             <tr>
-                <td class="font-medium">{{ $item->judul }}</td>
+                <td class="font-medium">
+                    {{ $item->judul }}
+                    @if ($item->wilayah_kerja->perluCekLegalitas())<x-badge :color="$item->wilayah_kerja->color()" class="ml-1">{{ $item->wilayah_kerja->label() }}</x-badge>@endif
+                </td>
                 <td>{{ $item->instansi->nama }}</td>
                 <td>{{ $item->kategori->nama }}</td>
                 <td class="whitespace-nowrap">{{ $item->gajiLabel() }}</td>

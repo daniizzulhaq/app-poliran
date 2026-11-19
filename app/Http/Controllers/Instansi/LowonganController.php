@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers\Instansi;
 
-use App\Enums\JenisKelamin;
-use App\Enums\Pendidikan;
 use App\Enums\StatusPenyaluran;
-use App\Enums\TipeKerja;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Instansi\LowonganRequest;
 use App\Models\JobListing;
-use App\Models\Kategori;
-use App\Models\Skill;
 use App\Services\JobListingService;
+use App\Support\OpsiForm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -52,7 +48,7 @@ class LowonganController extends Controller
         $lowongan->load(['kategori', 'skills']);
 
         $tersalur = $lowongan->penyaluran()
-            ->where('status', StatusPenyaluran::Diterima)
+            ->where('status', StatusPenyaluran::Menyalurkan)
             ->with('pencariKerja:id,nama,jenis_kelamin,no_wa')
             ->latest('hasil_pada')
             ->get();
@@ -87,12 +83,6 @@ class LowonganController extends Controller
     /** @return array<string, mixed> */
     private function opsi(): array
     {
-        return [
-            'kategori' => Kategori::orderBy('nama')->pluck('nama', 'id')->all(),
-            'skills' => Skill::orderBy('nama')->pluck('nama', 'id')->all(),
-            'pendidikan' => Pendidikan::options(),
-            'jenisKelamin' => JenisKelamin::options(),
-            'tipeKerja' => TipeKerja::options(),
-        ];
+        return OpsiForm::lowongan();
     }
 }

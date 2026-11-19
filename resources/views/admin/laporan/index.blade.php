@@ -17,6 +17,11 @@
         @endforeach
     </div>
 
+    <x-card title="Bertahan Bekerja (Tindak Lanjut)" :padding="false" class="mb-4">
+        <x-slot:actions><x-button :href="route('admin.penyaluran.tindak-lanjut')" size="sm" variant="secondary">Tindak Lanjut Kerja</x-button></x-slot:actions>
+        <div class="overflow-x-auto">@include('admin.laporan._tabel-retensi')</div>
+    </x-card>
+
     <x-card title="Rekap per Kecamatan" :padding="false">
         <div class="overflow-x-auto">@include('admin.laporan._tabel-rekap')</div>
     </x-card>

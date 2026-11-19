@@ -50,6 +50,19 @@
                             <ul class="list-disc space-y-1 pl-5 text-xs text-slate-600">
                                 <li>Gaji wajar?</li><li>Tidak meminta uang dari pelamar?</li><li>Bukan penipuan?</li>
                             </ul>
+                            @if ($lowongan->wilayah_kerja->perluCekLegalitas())
+                                <div class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                                    <p class="mb-1 font-semibold">Lowongan {{ mb_strtolower($lowongan->wilayah_kerja->label()) }}: rawan calo/TPPO. Periksa:</p>
+                                    <ul class="list-disc space-y-1 pl-5">
+                                        @foreach ($lowongan->wilayah_kerja->daftarPeriksa() as $poin)<li>{{ $poin }}</li>@endforeach
+                                    </ul>
+                                    @if ($lowongan->nomor_izin_p3mi)<p class="mt-2">Nomor izin P3MI dari instansi: <strong>{{ $lowongan->nomor_izin_p3mi }}</strong></p>@endif
+                                </div>
+                                <label x-show="keputusan === 'terima'" class="flex items-start gap-2 text-sm">
+                                    <input type="checkbox" name="legalitas_diperiksa" value="1" @checked(old('legalitas_diperiksa')) class="mt-0.5 rounded border-slate-300">
+                                    <span>Saya sudah memeriksa legalitas sesuai daftar periksa di atas.</span>
+                                </label>
+                            @endif
                             <x-textarea label="Catatan survei" name="catatan_survei" rows="3" />
                             <div class="space-y-2 text-sm">
                                 <label class="flex items-center gap-2"><input type="radio" name="keputusan" value="terima" x-model="keputusan"> ACC / Aktifkan</label>

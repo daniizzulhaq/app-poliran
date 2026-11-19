@@ -22,10 +22,12 @@ class PendaftarController extends Controller
     {
         $user = $request->user();
         $status = StatusPendaftar::tryFrom((string) $request->query('status'));
+        $menungguLama = $request->query('status') === 'menunggu_lama';
 
         $pendaftar = PencariKerja::visibleTo($user)
             ->with(['kecamatan:id,nama', 'desa:id,nama'])
             ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($menungguLama, fn ($q) => $q->menungguLama()->oldest())
             ->when($request->filled('kecamatan_id'), fn ($q) => $q->where('kecamatan_id', $request->integer('kecamatan_id')))
             ->when($request->filled('q'), function ($q) use ($request) {
                 $cari = trim($request->q);
@@ -39,7 +41,7 @@ class PendaftarController extends Controller
             ->when(! $user->isSuperAdmin(), fn ($q) => $q->whereIn('id', $user->kecamatanIds()))
             ->pluck('nama', 'id');
 
-        return view('admin.pendaftar.index', compact('pendaftar', 'status', 'kecamatan') + ['semuaKecamatan' => $user->isSuperAdmin()]);
+        return view('admin.pendaftar.index', compact('pendaftar', 'status', 'kecamatan', 'menungguLama') + ['semuaKecamatan' => $user->isSuperAdmin()]);
     }
 
     public function create(Request $request): View

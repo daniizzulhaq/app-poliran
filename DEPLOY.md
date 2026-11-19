@@ -102,18 +102,17 @@ cPanel → Cron Jobs → setiap menit:
 
 1. Masuk sebagai `superadmin@poliran.test` / `password`, **ganti email & password** (menu Akun Admin) atau buat Super Admin baru lalu nonaktifkan akun demo.
 2. Nonaktifkan/ubah semua akun demo lain (`survei@`, `lapangan@`, `lapangan2@`, `instansi@`, `pencari@` — akun instansi & pencari demo bisa dihapus lewat database).
-3. Isi data wilayah asli (lihat bawah), konten halaman awal, dan logo.
+3. Periksa data wilayah (lihat bawah), isi konten halaman awal, dan ganti logo.
 
-## Data wilayah asli
+## Data wilayah (kecamatan & desa TTS)
 
-Isi `database/data/wilayah_tts.csv` dengan format:
+`database/data/wilayah_tts.csv` sudah berisi 32 kecamatan dan 278 desa/kelurahan Kabupaten Timor Tengah Selatan
+(kode Kemendagri 53.02, sumber API [wilayah.id](https://wilayah.id)). `db:seed` memuatnya otomatis, tanpa perlu internet.
 
-```
-kode_kecamatan,nama_kecamatan,kode_desa,nama_desa
-,Nama Kecamatan,,Nama Desa
-```
-
-lalu jalankan `php artisan db:seed --class=WilayahSeeder --force` (aman diulang, tidak menduplikasi). Hapus kecamatan contoh ("Kecamatan Contoh A/B") lewat menu Kecamatan & Desa bila belum dipakai. Data juga bisa diisi manual di menu tersebut.
+- Menambah kecamatan/desa baru (mis. pemekaran): menu **Kecamatan & Desa** → **Sinkronkan Data Wilayah** (server perlu akses internet),
+  atau di terminal `php artisan wilayah:impor`. Hanya menambah yang belum ada; nama yang sudah diubah admin tidak ditimpa.
+- Memperbarui salinan CSV di repo: `php artisan wilayah:impor --csv`.
+- Sumber API bisa diganti lewat `.env`: `WILAYAH_API_URL` (default `https://wilayah.id/api`) dan `WILAYAH_KABUPATEN` (default `53.02`).
 
 ## Update aplikasi
 

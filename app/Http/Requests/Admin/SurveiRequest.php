@@ -18,6 +18,7 @@ class SurveiRequest extends FormRequest
             'keputusan' => ['required', 'in:terima,tolak'],
             'catatan_survei' => ['nullable', 'string', 'max:2000'],
             'alasan_tolak' => ['required_if:keputusan,tolak', 'nullable', 'string', 'max:2000'],
+            'legalitas_diperiksa' => ['nullable', 'boolean'],
         ];
     }
 

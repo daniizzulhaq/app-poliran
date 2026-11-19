@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\StatusPenyaluran;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\HasilPenyaluranRequest;
 use App\Http\Requests\Admin\SalurkanRequest;
+use App\Http\Requests\Admin\UbahTahapPenyaluranRequest;
 use App\Models\JobListing;
 use App\Models\PencariKerja;
 use App\Models\Penyaluran;
@@ -19,20 +19,25 @@ class PenyaluranController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
-        $status = StatusPenyaluran::tryFrom((string) $request->query('status')) ?? StatusPenyaluran::Diproses;
+        $status = StatusPenyaluran::tryFrom((string) $request->query('status')) ?? StatusPenyaluran::Merekrut;
+        $terlihat = fn () => Penyaluran::query()->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user));
 
-        $daftar = Penyaluran::query()
-            ->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user))
+        $jumlah = $terlihat()
+            ->selectRaw('status, COUNT(*) AS jumlah')
+            ->groupBy('status')
+            ->pluck('jumlah', 'status');
+
+        $daftar = $terlihat()
             ->where('status', $status)
             ->with([
                 'pencariKerja' => fn ($q) => $q->select('id', 'nama', 'kecamatan_id', 'no_wa')->with('kecamatan:id,nama'),
-                'jobListing' => fn ($q) => $q->select('id', 'judul', 'instansi_id')->with('instansi:id,nama,no_wa'),
+                'jobListing' => fn ($q) => $q->select('id', 'judul', 'instansi_id', 'lokasi_kerja')->with('instansi:id,nama,no_wa,penanggung_jawab'),
             ])
-            ->latest()
+            ->latest('updated_at')
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.penyaluran.index', compact('daftar', 'status'));
+        return view('admin.penyaluran.index', compact('daftar', 'status', 'jumlah'));
     }
 
     public function store(SalurkanRequest $request, JobListing $lowongan, PenyaluranService $service): RedirectResponse
@@ -43,13 +48,14 @@ class PenyaluranController extends Controller
 
         $service->salurkan($lowongan, $pencari, $request->user());
 
-        return back()->with('success', $pencari->nama.' disalurkan ke "'.$lowongan->judul.'" (diproses). Hubungi instansi dan pendaftar, lalu catat hasilnya.');
+        return back()->with('success', $pencari->nama.' direkrut untuk "'.$lowongan->judul.'" (tahap Merekrut). Hubungi instansi dan pendaftar, lalu lanjutkan tahapnya di menu Penyaluran.');
     }
 
-    public function hasil(HasilPenyaluranRequest $request, Penyaluran $penyaluran, PenyaluranService $service): RedirectResponse
+    public function tahap(UbahTahapPenyaluranRequest $request, Penyaluran $penyaluran, PenyaluranService $service): RedirectResponse
     {
-        $service->catatHasil($penyaluran, StatusPenyaluran::from($request->status), $request->user(), $request->catatan);
+        $tahap = StatusPenyaluran::from($request->status);
+        $service->ubahTahap($penyaluran, $tahap, $request->user(), $request->catatan, $request->tanggal_mulai_kerja, $request->integer('gaji') ?: null);
 
-        return back()->with('success', 'Hasil penyaluran disimpan.');
+        return back()->with('success', 'Penyaluran dipindah ke tahap '.$tahap->label().'.');
     }
 }

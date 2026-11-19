@@ -1,5 +1,10 @@
 <x-layouts.app title="Kecamatan & Desa">
-    <x-page-header title="Kecamatan & Desa" subtitle="Wilayah Kabupaten Timor Tengah Selatan. Data awal bisa diimpor dari database/data/wilayah_tts.csv." />
+    <x-page-header title="Kecamatan & Desa" subtitle="Wilayah Kabupaten Timor Tengah Selatan sesuai kode Kemendagri. Sinkronkan untuk menambah kecamatan/desa baru (mis. pemekaran); nama yang sudah Anda ubah tidak ditimpa.">
+        <form method="POST" action="{{ route('admin.kecamatan.sinkronkan') }}">
+            @csrf
+            <x-button variant="secondary">Sinkronkan Data Wilayah</x-button>
+        </form>
+    </x-page-header>
 
     <x-card class="mb-4 max-w-2xl">
         <form method="POST" action="{{ route('admin.kecamatan.store') }}" class="flex flex-wrap items-end gap-2">

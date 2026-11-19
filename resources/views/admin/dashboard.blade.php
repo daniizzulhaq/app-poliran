@@ -18,8 +18,11 @@
                 <x-stat :label="$s->label()" :value="$perStatus[$s->value]" :color="$s->color()" :href="route('admin.pendaftar.index', ['status' => $s->value])" />
             @endforeach
         </div>
-        <div class="mb-6 grid grid-cols-2 gap-4">
-            <x-stat label="Penyaluran diproses" :value="$penyaluranDiproses" color="yellow" :href="route('admin.penyaluran.index')" />
+        <h2 class="mb-2 text-sm font-semibold text-slate-600 uppercase">Perlu ditindaklanjuti</h2>
+        <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <x-stat :label="'Pendaftar belum diproses > '.\App\Models\PencariKerja::BATAS_HARI_MENUNGGU.' hari'" :value="$menungguLama" :color="$menungguLama ? 'red' : 'gray'" :href="route('admin.pendaftar.index', ['status' => 'menunggu_lama'])" />
+            <x-stat label="Penyaluran berjalan" :value="$penyaluranBerjalan" color="yellow" :href="route('admin.penyaluran.index')" />
+            <x-stat label="Tindak lanjut kerja jatuh tempo" :value="$tindakLanjutJatuhTempo" :color="$tindakLanjutJatuhTempo ? 'red' : 'gray'" :href="route('admin.penyaluran.tindak-lanjut')" />
             <x-stat label="Peserta pelatihan menunggu seleksi" :value="$pesertaMenunggu" color="yellow" :href="route('admin.peserta.index')" />
         </div>
     @endisset

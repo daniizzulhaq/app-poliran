@@ -18,6 +18,7 @@
                 <x-stat :label="$label" :value="$statistik[$kunci]" />
             @endforeach
         </div>
+        <div class="mt-10">@include('public._waspada')</div>
         <div class="mt-10"><x-button :href="route('register')" size="lg">Daftar Sekarang</x-button></div>
     </section>
 </x-layouts.public>

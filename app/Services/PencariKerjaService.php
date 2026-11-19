@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\CaraPersetujuan;
 use App\Enums\StatusPendaftar;
 use App\Models\PencariKerja;
 use App\Models\User;
@@ -23,7 +24,7 @@ class PencariKerjaService
     {
         return DB::transaction(function () use ($data, $cv, $pencari, $akun, $oleh) {
             $baru = $pencari === null;
-            $atribut = collect($data)->except(['kategori', 'skills', 'cv'])->all();
+            $atribut = collect($data)->except(['kategori', 'skills', 'cv', 'persetujuan', 'persetujuan_cara'])->all();
 
             if ($baru) {
                 $pencari = new PencariKerja([
@@ -34,6 +35,7 @@ class PencariKerjaService
             }
 
             $pencari->fill($atribut);
+            $this->catatPersetujuan($pencari, $data, $baru ? $akun : null);
             if ($cv) {
                 $pencari->cv_path = $this->files->simpanPrivate($cv, 'cv', $pencari->cv_path);
             }
@@ -52,5 +54,26 @@ class PencariKerjaService
 
             return $pencari;
         });
+    }
+
+    /**
+     * Persetujuan data (UU PDP): pendaftar mandiri sudah mencentang saat membuat akun;
+     * pendaftar yang diinput petugas dicatat dari formulir (lisan / tertulis). Tidak pernah ditimpa.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function catatPersetujuan(PencariKerja $pencari, array $data, ?User $akunBaru): void
+    {
+        if ($pencari->persetujuan_pada) {
+            return;
+        }
+
+        if ($akunBaru) {
+            $pencari->persetujuan_cara = CaraPersetujuan::Daring;
+            $pencari->persetujuan_pada = $akunBaru->created_at ?? now();
+        } elseif (! empty($data['persetujuan']) && ! empty($data['persetujuan_cara'])) {
+            $pencari->persetujuan_cara = CaraPersetujuan::from($data['persetujuan_cara']);
+            $pencari->persetujuan_pada = now();
+        }
     }
 }

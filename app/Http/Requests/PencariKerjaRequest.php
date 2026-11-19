@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\CaraPersetujuan;
 use App\Enums\JenisKelamin;
 use App\Enums\Pendidikan;
 use App\Models\PencariKerja;
@@ -41,7 +42,13 @@ class PencariKerjaRequest extends FormRequest
             $kecamatanRule[] = Rule::in($user->kecamatanIds());
         }
 
-        return [
+        // Input oleh petugas: persetujuan warga wajib dicatat saat pendaftar baru dibuat.
+        $persetujuan = $this->routeIs('pencari.*') ? [] : [
+            'persetujuan' => [$pencari === null ? 'accepted' : 'nullable', 'boolean'],
+            'persetujuan_cara' => ['nullable', 'required_if_accepted:persetujuan', Rule::in(array_keys(CaraPersetujuan::opsiPetugas()))],
+        ];
+
+        return $persetujuan + [
             'nama' => ['required', 'string', 'max:100'],
             'nik' => ['required', 'digits:16', Rule::unique('pencari_kerja', 'nik')->ignore($pencari?->id)],
             'jenis_kelamin' => ['required', Rule::enum(JenisKelamin::class)],
@@ -73,6 +80,8 @@ class PencariKerjaRequest extends FormRequest
             'tanggal_lahir.before' => 'Umur minimal 15 tahun.',
             'no_wa.regex' => 'Nomor WhatsApp harus diawali 08 atau 62.',
             'kategori.required' => 'Pilih minimal satu kategori minat.',
+            'persetujuan.accepted' => 'Pastikan warga sudah menyetujui datanya disimpan dan digunakan untuk program POLIRAN.',
+            'persetujuan_cara.required_if_accepted' => 'Pilih cara warga memberi persetujuan.',
         ];
     }
 

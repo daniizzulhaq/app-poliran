@@ -4,6 +4,13 @@
     <x-detail label="Skill dibutuhkan">{{ $lowongan->skills->pluck('nama')->implode(', ') }}</x-detail>
     <x-detail label="Tipe kerja">{{ $lowongan->tipe_kerja->label() }}</x-detail>
     <x-detail label="Lokasi kerja">{{ $lowongan->lokasi_kerja }}</x-detail>
+    <x-detail label="Wilayah kerja"><x-badge :color="$lowongan->wilayah_kerja->color()">{{ $lowongan->wilayah_kerja->label() }}</x-badge></x-detail>
+    @if ($lowongan->nomor_izin_p3mi)
+        <x-detail label="Izin P3MI">{{ $lowongan->nomor_izin_p3mi }}</x-detail>
+    @endif
+    @if ($lowongan->wilayah_kerja->perluCekLegalitas())
+        <x-detail label="Legalitas">{{ $lowongan->legalitas_diperiksa_pada ? 'Sudah diperiksa petugas '.$lowongan->legalitas_diperiksa_pada->format('d/m/Y') : 'Belum diperiksa' }}</x-detail>
+    @endif
     <x-detail label="Gaji">{{ $lowongan->gajiLabel() }}</x-detail>
     <x-detail label="Kuota / tersalur">{{ $lowongan->kuota }} orang / {{ $lowongan->jumlah_tersalur }} tersalur</x-detail>
     <x-detail label="Batas tanggal">{{ $lowongan->batas_tanggal->translatedFormat('d F Y') }}</x-detail>

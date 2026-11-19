@@ -5,6 +5,7 @@ use App\Models\JobListing;
 use App\Models\Kecamatan;
 use App\Models\Pelatihan;
 use App\Models\PencariKerja;
+use App\Models\Penyaluran;
 use App\Models\User;
 use Database\Seeders\AkunDemoSeeder;
 use Database\Seeders\DataDemoSeeder;
@@ -17,6 +18,11 @@ it('semua halaman bisa dibuka tanpa error untuk setiap akun demo', function () {
     Storage::fake('local');
     $this->seed([WilayahSeeder::class, MasterDataSeeder::class, AkunDemoSeeder::class, DataDemoSeeder::class]);
 
+    // Data demo memperlihatkan fitur tindak lanjut dan pendaftar yang menunggu lama.
+    expect(PencariKerja::menungguLama()->count())->toBe(1)
+        ->and(Penyaluran::tindakLanjutJatuhTempo()->count())->toBe(1)
+        ->and(Kecamatan::count())->toBe(32);
+
     $lowongan = JobListing::first();
     $pencari = PencariKerja::first();
     $pelatihan = Pelatihan::first();
@@ -28,6 +34,8 @@ it('semua halaman bisa dibuka tanpa error untuk setiap akun demo', function () {
         route('public.kontak'), route('dashboard'), route('akun.password.edit'),
         route('admin.dashboard'), route('admin.survei-instansi.index'), route('admin.survei-instansi.show', $instansi),
         route('admin.survei-lowongan.index'), route('admin.lowongan.index'), route('admin.lowongan.show', $lowongan),
+        route('admin.survei-instansi.create'), route('admin.lowongan.create'), route('admin.penyaluran.tindak-lanjut'),
+        route('admin.penyaluran.tindak-lanjut', ['tab' => 'semua']), route('admin.pendaftar.index', ['status' => 'menunggu_lama']),
         route('admin.pendaftar.index'), route('admin.pendaftar.create'), route('admin.pendaftar.show', $pencari),
         route('admin.pendaftar.edit', $pencari), route('admin.penyaluran.index'), route('admin.pelatihan.index'),
         route('admin.pelatihan.create'), route('admin.pelatihan.show', $pelatihan), route('admin.pelatihan.edit', $pelatihan),

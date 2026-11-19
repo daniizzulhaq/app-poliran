@@ -68,6 +68,8 @@ Route::middleware(['auth', 'aktif'])->group(function () {
         // Survei instansi
         Route::middleware('permission:survei-instansi')->prefix('survei-instansi')->name('survei-instansi.')->group(function () {
             Route::get('/', [Admin\SurveiInstansiController::class, 'index'])->name('index');
+            Route::get('/tambah', [Admin\SurveiInstansiController::class, 'create'])->name('create');
+            Route::post('/', [Admin\SurveiInstansiController::class, 'store'])->name('store');
             Route::get('/{instansi}', [Admin\SurveiInstansiController::class, 'show'])->name('show');
             Route::post('/{instansi}/putusan', [Admin\SurveiInstansiController::class, 'putusan'])->name('putusan');
         });
@@ -81,6 +83,10 @@ Route::middleware(['auth', 'aktif'])->group(function () {
         // Lowongan (internal, hanya admin) + tab pendaftar cocok
         Route::middleware('permission:lihat-lowongan')->prefix('lowongan')->name('lowongan.')->group(function () {
             Route::get('/', [Admin\LowonganController::class, 'index'])->name('index');
+            Route::middleware('permission:survei-lowongan')->group(function () {
+                Route::get('/tambah', [Admin\LowonganController::class, 'create'])->name('create');
+                Route::post('/', [Admin\LowonganController::class, 'store'])->name('store');
+            });
             Route::get('/{lowongan}', [Admin\LowonganController::class, 'show'])->name('show');
             Route::post('/{lowongan}/tutup', [Admin\LowonganController::class, 'tutup'])->name('tutup');
         });
@@ -96,7 +102,9 @@ Route::middleware(['auth', 'aktif'])->group(function () {
         Route::middleware('permission:kelola-penyaluran')->prefix('penyaluran')->name('penyaluran.')->group(function () {
             Route::get('/', [Admin\PenyaluranController::class, 'index'])->name('index');
             Route::post('/lowongan/{lowongan}', [Admin\PenyaluranController::class, 'store'])->name('store');
-            Route::put('/{penyaluran}/hasil', [Admin\PenyaluranController::class, 'hasil'])->name('hasil');
+            Route::put('/{penyaluran}/tahap', [Admin\PenyaluranController::class, 'tahap'])->name('tahap');
+            Route::get('/tindak-lanjut', [Admin\TindakLanjutController::class, 'index'])->name('tindak-lanjut');
+            Route::post('/{penyaluran}/tindak-lanjut', [Admin\TindakLanjutController::class, 'store'])->name('tindak-lanjut.store');
         });
 
         // Pelatihan
@@ -133,6 +141,7 @@ Route::middleware(['auth', 'aktif'])->group(function () {
         });
 
         Route::middleware('permission:kelola-master-data')->group(function () {
+            Route::post('kecamatan/sinkronkan', [Admin\KecamatanController::class, 'sinkronkan'])->name('kecamatan.sinkronkan');
             Route::resource('kecamatan', Admin\KecamatanController::class)->except(['create', 'edit']);
             Route::post('kecamatan/{kecamatan}/desa', [Admin\KecamatanController::class, 'storeDesa'])->name('desa.store');
             Route::put('kecamatan/{kecamatan}/desa/{desa}', [Admin\KecamatanController::class, 'updateDesa'])->name('desa.update');

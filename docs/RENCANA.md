@@ -52,14 +52,15 @@ Semua tabel punya `id` (bigint) dan `created_at/updated_at` kecuali disebut lain
 | admin_kecamatan | user_id, kecamatan_id (PK gabungan) | pivot Admin Lapangan ↔ kecamatan |
 | kategori | nama (unik), slug (unik) | |
 | skill | nama (unik) | |
-| instansi | user_id (unik), nama, jenis, penanggung_jawab, alamat, no_wa, jenis_dokumen (ktp/nib), nomor_dokumen, file_dokumen (private), file_selfie (private), latitude, longitude, status, catatan_survei, alasan_tolak, disurvei_oleh (users), disurvei_pada, diajukan_pada | belongsTo user, hasMany jobListings |
-| job_listings | instansi_id, kategori_id, judul, jobdesk, pendidikan_min (null), umur_min, umur_max, jenis_kelamin (null), pengalaman, syarat_lain, gaji_min, gaji_max, gaji_nego (bool), fasilitas, ketentuan_lain, tipe_kerja, lokasi_kerja, kuota, jumlah_tersalur (default 0), batas_tanggal, status, catatan_survei, alasan_tolak, disurvei_oleh, disurvei_pada, ditutup_oleh, ditutup_pada | belongsTo instansi & kategori, belongsToMany skill, hasMany penyaluran |
+| instansi | user_id (null bila diinput petugas, unik), dibuat_oleh (users, null), nama, jenis, penanggung_jawab, alamat, no_wa, jenis_dokumen (ktp/nib), nomor_dokumen, file_dokumen (private), file_selfie (private), latitude, longitude, status, catatan_survei, alasan_tolak, disurvei_oleh (users), disurvei_pada, diajukan_pada | belongsTo user, hasMany jobListings |
+| job_listings | instansi_id, dibuat_oleh (users, null = diunggah instansi), kategori_id, judul, jobdesk, pendidikan_min (null), umur_min, umur_max, jenis_kelamin (null), pengalaman, syarat_lain, gaji_min, gaji_max, gaji_nego (bool), fasilitas, ketentuan_lain, tipe_kerja, lokasi_kerja, wilayah_kerja (dalam_tts/luar_tts/luar_negeri), nomor_izin_p3mi (null), kuota, jumlah_tersalur (default 0), batas_tanggal, status, catatan_survei, alasan_tolak, disurvei_oleh, disurvei_pada, legalitas_diperiksa_pada (null), ditutup_oleh, ditutup_pada | belongsTo instansi & kategori, belongsToMany skill, hasMany penyaluran |
 | job_listing_skill | job_listing_id, skill_id (PK gabungan) | |
-| pencari_kerja | user_id (null, unik — null bila diinput admin), nama, nik (unik, 16 digit), jenis_kelamin, tanggal_lahir, pendidikan, jurusan, no_wa, kecamatan_id, desa_id, alamat_detail, kemampuan_lain, pengalaman_kerja, cv_path (private), status, dibuat_oleh (users, null) | belongsTo user/kecamatan/desa, belongsToMany kategori & skill, hasMany riwayatStatus, penyaluran, pesertaPelatihan |
+| pencari_kerja | user_id (null, unik — null bila diinput admin), nama, nik (unik, 16 digit), jenis_kelamin, tanggal_lahir, pendidikan, jurusan, no_wa, kecamatan_id, desa_id, alamat_detail, kemampuan_lain, pengalaman_kerja, cv_path (private), persetujuan_cara (daring/lisan/tertulis, null), persetujuan_pada (null), status, dibuat_oleh (users, null) | belongsTo user/kecamatan/desa, belongsToMany kategori & skill, hasMany riwayatStatus, penyaluran, pesertaPelatihan |
 | kategori_pencari_kerja | pencari_kerja_id, kategori_id | |
 | pencari_kerja_skill | pencari_kerja_id, skill_id | |
 | riwayat_status | pencari_kerja_id, status_lama (null), status_baru, user_id (null = sistem/pendaftar), catatan, created_at | |
-| penyaluran | job_listing_id, pencari_kerja_id (unik gabungan), status, catatan, disalurkan_oleh, diproses_oleh (null), hasil_pada (null) | |
+| penyaluran | job_listing_id, pencari_kerja_id (unik gabungan), status, catatan, disalurkan_oleh, diproses_oleh (null), hasil_pada (null), tanggal_mulai_kerja (null), gaji (null) | hasMany tindakLanjut |
+| tindak_lanjut | penyaluran_id, bulan_ke (1/3/6; unik gabungan), status (masih_bekerja/berhenti/tidak_terhubung), catatan, dicatat_oleh | belongsTo penyaluran |
 | pelatihan | kategori_id, kecamatan_id, nama, slug (unik), deskripsi, penyelenggara (default "Polres Timor Tengah Selatan"), mitra (null), tanggal_mulai, tanggal_selesai (null), jam_mulai, jam_selesai (null), alamat, kuota, syarat, batas_pendaftaran, bersertifikat (bool), poster (public), status, dibuat_oleh | hasMany peserta |
 | peserta_pelatihan | pelatihan_id, pencari_kerja_id (unik gabungan), alasan, pengalaman_bidang, status, catatan, nomor_sertifikat (null, unik), sertifikat_path (private, null), diproses_oleh | |
 | pengaturan | kunci (unik), nilai (longtext) | konten landing: hero, sambutan, program, kontak |
@@ -76,7 +77,7 @@ Semua tabel punya `id` (bigint) dan `created_at/updated_at` kecuali disebut lain
 - **Pendidikan**: tidak_sekolah, sd, smp, sma, d3, s1, s2 (+ `tingkat()` untuk perbandingan)
 - **JenisKelamin**: L, P
 - **StatusPendaftar**: terdaftar, direkrut, dilatih, bersertifikat, non_bersertifikat, disalurkan
-- **StatusPenyaluran**: diproses, diterima, tidak_diterima
+- **StatusPenyaluran** (tahapan): merekrut → bersertifikat / non_bersertifikat (melatih) → menyalurkan; tidak_diterima (batal). Pelatihan boleh dilewati.
 - **StatusPelatihan**: draft, dibuka, ditutup, selesai
 - **StatusPeserta**: mendaftar, diterima, ditolak, lulus, tidak_lulus
 
@@ -104,5 +105,6 @@ Pembatasan per kecamatan: `PencariKerja::scopeVisibleTo(User)` + `PencariKerjaPo
 
 - Lowongan tampil hanya untuk admin & instansi pemilik. Kedaluwarsa: command harian `lowongan:tutup-kedaluwarsa` + scope `aktif()` mengecek `batas_tanggal >= hari ini` + pembaruan saat daftar lowongan dibuka.
 - JobMatcher: kategori 40, skill 40 × (sama/diminta; 40 jika lowongan tanpa skill), pendidikan 10 (10 jika tanpa syarat), umur 10. Filter jenis kelamin; pendaftar `disalurkan` dikeluarkan. Kategori dari minat + kategori pelatihan yang diikuti (diterima/lulus).
-- Penyaluran diterima → pendaftar `disalurkan`, `jumlah_tersalur` +1, lowongan `terpenuhi` jika `jumlah_tersalur >= kuota` (dalam transaksi + lockForUpdate).
+- Tahap penyaluran menaikkan status pendaftar (merekrut → `direkrut`, melatih → `bersertifikat`/`non_bersertifikat`) tanpa pernah menurunkannya (`StatusPendaftar::tingkat()`). Tidak diterima → pendaftar `direkrut` kembali `terdaftar` bila tidak ada penyaluran lain yang berjalan.
+- Penyaluran tahap menyalurkan → pendaftar `disalurkan`, `jumlah_tersalur` +1, lowongan `terpenuhi` jika `jumlah_tersalur >= kuota` (dalam transaksi + lockForUpdate).
 - Pelatihan: peserta diterima → pendaftar `dilatih`; lulus & bersertifikat → `bersertifikat` (+PDF); tidak lulus / tanpa sertifikat → `non_bersertifikat`.

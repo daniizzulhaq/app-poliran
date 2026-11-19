@@ -10,6 +10,7 @@
             @foreach (\App\Enums\StatusPendaftar::cases() as $s)
                 <option value="{{ $s->value }}" @selected($status === $s)>{{ $s->label() }}</option>
             @endforeach
+            <option value="menunggu_lama" @selected($menungguLama)>Belum diproses &gt; {{ \App\Models\PencariKerja::BATAS_HARI_MENUNGGU }} hari</option>
         </select>
         <select name="kecamatan_id" class="form-control">
             <option value="">Semua kecamatan</option>
@@ -19,6 +20,13 @@
         </select>
         <x-button variant="secondary">Filter</x-button>
     </form>
+
+    @if ($menungguLama)
+        <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            Pendaftar berstatus <strong>Terdaftar</strong> yang tidak ada perkembangan selama lebih dari {{ \App\Models\PencariKerja::BATAS_HARI_MENUNGGU }} hari
+            (urut dari yang paling lama). Hubungi mereka, tawarkan pelatihan, atau cocokkan dengan lowongan.
+        </div>
+    @endif
 
     <x-table :paginator="$pendaftar">
         <x-slot:head><th>Nama</th><th>NIK</th><th>Kecamatan / Desa</th><th>Pendidikan</th><th>Status</th><th>Terdaftar</th><th></th></x-slot:head>

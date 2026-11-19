@@ -6,14 +6,17 @@ use App\Enums\StatusInstansi;
 use App\Enums\StatusLowongan;
 use App\Enums\StatusPelatihan;
 use App\Enums\StatusPendaftar;
+use App\Enums\StatusPenyaluran;
 use App\Models\Instansi;
 use App\Models\JobListing;
 use App\Models\Kategori;
 use App\Models\Kecamatan;
 use App\Models\Pelatihan;
 use App\Models\PencariKerja;
+use App\Models\RiwayatStatus;
 use App\Models\Skill;
 use App\Models\User;
+use App\Services\PenyaluranService;
 use App\Services\StatusPendaftarService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -62,6 +65,12 @@ class DataDemoSeeder extends Seeder
             'status' => StatusLowongan::MenungguSurvey,
         ])->skills()->sync($skill->only(['Servis Motor'])->values());
 
+        JobListing::firstOrCreate(['instansi_id' => $instansi->id, 'judul' => 'Pekerja Kebun (Luar Daerah)'], [
+            'kategori_id' => $bangunan->id, 'jobdesk' => 'Perawatan kebun dan panen.', 'gaji_min' => 3000000,
+            'tipe_kerja' => 'kontrak', 'lokasi_kerja' => 'Kalimantan Timur', 'wilayah_kerja' => 'luar_tts', 'kuota' => 5,
+            'batas_tanggal' => now()->addWeeks(3), 'status' => StatusLowongan::MenungguSurvey,
+        ]);
+
         // Pelatihan dibuka
         Pelatihan::firstOrCreate(['slug' => 'servis-motor-dasar'], [
             'kategori_id' => $otomotif->id, 'kecamatan_id' => $kecamatan->first()->id, 'nama' => 'Servis Motor Dasar',
@@ -82,6 +91,7 @@ class DataDemoSeeder extends Seeder
                 'tanggal_lahir' => now()->subYears(24), 'pendidikan' => 'sma', 'no_wa' => '081200000000',
                 'kecamatan_id' => $k1->id, 'desa_id' => $k1->desa->first()->id, 'alamat_detail' => 'RT 01 / RW 01',
                 'status' => StatusPendaftar::Terdaftar, 'dibuat_oleh' => $akunPencari->id,
+                'persetujuan_cara' => 'daring', 'persetujuan_pada' => now(),
             ]);
             $p->kategori()->sync([$bangunan->id]);
             $p->skills()->sync($skill->only(['Tukang Batu'])->values());
@@ -102,11 +112,38 @@ class DataDemoSeeder extends Seeder
                     'tanggal_lahir' => now()->subYears(20 + $n * 3), 'pendidikan' => ['smp', 'sma', 's1'][$n - 1],
                     'no_wa' => '08120000000'.$n, 'kecamatan_id' => $k->id, 'desa_id' => $k->desa->first()->id,
                     'alamat_detail' => 'Alamat contoh', 'status' => StatusPendaftar::Terdaftar, 'dibuat_oleh' => $superAdmin?->id,
+                    'persetujuan_cara' => 'lisan', 'persetujuan_pada' => now(),
                 ]);
                 $p->kategori()->sync([$n === 2 ? $otomotif->id : $bangunan->id]);
                 $p->skills()->sync($skill->only($n === 2 ? ['Servis Motor'] : ['Tukang Batu', 'Tukang Kayu'])->values());
                 $status->catatAwal($p, $superAdmin, 'Data demo');
             }
         }
+
+        $this->contohTindakLanjut($kecamatan, $lowongan, $superAdmin);
+    }
+
+    /** Satu pendaftar menunggu lama dan satu pekerja tersalur 2 bulan lalu (tindak lanjut bulan ke-1 jatuh tempo). */
+    private function contohTindakLanjut($kecamatan, JobListing $lowongan, ?User $superAdmin): void
+    {
+        if (! $superAdmin) {
+            return;
+        }
+
+        $lama = PencariKerja::where('kecamatan_id', $kecamatan->first()->id)->where('nama', 'like', 'Warga Demo % 3')->first();
+        if ($lama && $lama->created_at->gt(now()->subDays(30))) {
+            $lama->forceFill(['created_at' => now()->subDays(45)])->saveQuietly();
+            RiwayatStatus::where('pencari_kerja_id', $lama->id)->update(['created_at' => now()->subDays(45)]);
+        }
+
+        $pekerja = PencariKerja::where('kecamatan_id', ($kecamatan->get(1) ?? $kecamatan->first())->id)
+            ->where('nama', 'like', 'Warga Demo % 1')->first();
+        if (! $pekerja || $pekerja->penyaluran()->exists() || $lowongan->sisaKuota() < 1) {
+            return;
+        }
+
+        $layanan = app(PenyaluranService::class);
+        $penyaluran = $layanan->salurkan($lowongan, $pekerja, $superAdmin);
+        $layanan->ubahTahap($penyaluran, StatusPenyaluran::Menyalurkan, $superAdmin, 'Data demo', now()->subMonths(2)->toDateString(), 2500000);
     }
 }

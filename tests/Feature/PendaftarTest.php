@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\CaraPersetujuan;
 use App\Enums\Role;
 use App\Enums\StatusPendaftar;
 use App\Models\Kategori;
@@ -91,11 +92,60 @@ it('admin lapangan bisa menambah pendaftar manual hanya di kecamatannya', functi
     $adminA = buatUser(Role::AdminLapangan, [$this->kecA->id]);
     $this->actingAs($adminA);
 
-    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecB))->assertSessionHasErrors('kecamatan_id');
-    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecA, ['no_wa' => '']))->assertRedirect();
+    $setuju = ['persetujuan' => '1', 'persetujuan_cara' => 'lisan'];
+    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecB, $setuju))->assertSessionHasErrors('kecamatan_id');
+    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecA, ['no_wa' => ''] + $setuju))->assertRedirect();
 
     $p = PencariKerja::first();
     expect($p->user_id)->toBeNull()->and($p->dibuat_oleh)->toBe($adminA->id);
+});
+
+it('input manual oleh petugas wajib mencatat persetujuan warga', function () {
+    $this->actingAs(buatUser(Role::AdminLapangan, [$this->kecA->id]));
+
+    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecA))->assertSessionHasErrors('persetujuan');
+    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecA, ['persetujuan' => '1']))->assertSessionHasErrors('persetujuan_cara');
+    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecA, ['persetujuan' => '1', 'persetujuan_cara' => 'daring']))
+        ->assertSessionHasErrors('persetujuan_cara');
+    expect(PencariKerja::count())->toBe(0);
+
+    $this->post(route('admin.pendaftar.store'), dataProfil($this->kecA, ['persetujuan' => '1', 'persetujuan_cara' => 'tertulis']))
+        ->assertSessionHasNoErrors();
+    $p = PencariKerja::firstOrFail();
+    expect($p->persetujuan_cara)->toBe(CaraPersetujuan::Tertulis)->and($p->persetujuan_pada)->not->toBeNull();
+
+    $this->get(route('admin.pendaftar.show', $p))->assertSee('Tertulis (formulir bertanda tangan)');
+});
+
+it('pendaftar mandiri tercatat setuju secara daring; persetujuan lama bisa dicatat saat ubah data', function () {
+    $user = buatUser(Role::PencariKerja);
+    $this->actingAs($user)->put(route('pencari.profil.update'), dataProfil($this->kecA))->assertSessionHasNoErrors();
+    expect($user->fresh()->pencariKerja->persetujuan_cara)->toBe(CaraPersetujuan::Daring);
+
+    $lama = PencariKerja::factory()->diKecamatan($this->kecA)->create(['nik' => '5302014101990002']);
+    $this->actingAs(buatUser(Role::AdminLapangan, [$this->kecA->id]));
+    $this->get(route('admin.pendaftar.show', $lama))->assertSee('Belum tercatat');
+
+    $this->put(route('admin.pendaftar.update', $lama), dataProfil($this->kecA, ['nik' => $lama->nik]))->assertSessionHasNoErrors();
+    expect($lama->fresh()->persetujuan_pada)->toBeNull();
+
+    $this->put(route('admin.pendaftar.update', $lama), dataProfil($this->kecA, ['nik' => $lama->nik, 'persetujuan' => '1', 'persetujuan_cara' => 'lisan']))
+        ->assertSessionHasNoErrors();
+    expect($lama->fresh()->persetujuan_cara)->toBe(CaraPersetujuan::Lisan);
+});
+
+it('filter pendaftar yang belum diproses lebih dari 30 hari', function () {
+    $lama = PencariKerja::factory()->diKecamatan($this->kecA)->create(['nama' => 'Warga Lama', 'created_at' => now()->subDays(40)]);
+    PencariKerja::factory()->diKecamatan($this->kecA)->create(['nama' => 'Warga Baru']);
+    $diproses = PencariKerja::factory()->diKecamatan($this->kecA)->create(['nama' => 'Warga Diproses', 'created_at' => now()->subDays(40)]);
+    $diproses->riwayatStatus()->create(['status_lama' => 'direkrut', 'status_baru' => 'terdaftar', 'created_at' => now()->subDays(3)]);
+
+    expect(PencariKerja::menungguLama()->pluck('id')->all())->toBe([$lama->id]);
+
+    $this->actingAs(buatUser(Role::AdminLapangan, [$this->kecA->id]));
+    $this->get(route('admin.pendaftar.index', ['status' => 'menunggu_lama']))
+        ->assertOk()->assertSee('Warga Lama')->assertDontSee('Warga Baru')->assertDontSee('Warga Diproses');
+    $this->get(route('admin.dashboard'))->assertOk()->assertSee('Pendaftar belum diproses &gt; 30 hari', false);
 });
 
 it('ubah status tersimpan di riwayat', function () {

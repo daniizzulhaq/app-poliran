@@ -138,6 +138,11 @@
         </div>
     </section>
 
+    {{-- Waspada calo & TPPO --}}
+    <section id="waspada" class="mx-auto max-w-6xl px-4 py-16">
+        @include('public._waspada')
+    </section>
+
     {{-- Cerita sukses --}}
     @if ($testimoni->isNotEmpty())
         <section class="mx-auto max-w-6xl px-4 py-16">

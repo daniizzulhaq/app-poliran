@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\CaraPersetujuan;
 use App\Enums\JenisKelamin;
 use App\Enums\Pendidikan;
 use App\Enums\StatusPendaftar;
+use App\Enums\StatusPenyaluran;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +23,11 @@ class PencariKerja extends Model
     protected $fillable = [
         'user_id', 'nama', 'nik', 'jenis_kelamin', 'tanggal_lahir', 'pendidikan', 'jurusan', 'no_wa', 'kecamatan_id',
         'desa_id', 'alamat_detail', 'kemampuan_lain', 'pengalaman_kerja', 'cv_path', 'status', 'dibuat_oleh',
+        'persetujuan_cara', 'persetujuan_pada',
     ];
+
+    /** Pendaftar "terdaftar" yang tidak ada perkembangan selama ini dianggap menunggu terlalu lama. */
+    public const BATAS_HARI_MENUNGGU = 30;
 
     protected function casts(): array
     {
@@ -30,7 +36,23 @@ class PencariKerja extends Model
             'pendidikan' => Pendidikan::class,
             'status' => StatusPendaftar::class,
             'tanggal_lahir' => 'date',
+            'persetujuan_cara' => CaraPersetujuan::class,
+            'persetujuan_pada' => 'datetime',
         ];
+    }
+
+    /**
+     * Masih "terdaftar", tidak ada perubahan status dan tidak sedang dalam penyaluran
+     * selama BATAS_HARI_MENUNGGU hari. Supaya warga tidak terlupakan.
+     */
+    public function scopeMenungguLama(Builder $query): Builder
+    {
+        $batas = now()->subDays(self::BATAS_HARI_MENUNGGU);
+
+        return $query->where('status', StatusPendaftar::Terdaftar)
+            ->where('created_at', '<=', $batas)
+            ->whereDoesntHave('riwayatStatus', fn (Builder $q) => $q->where('created_at', '>', $batas))
+            ->whereDoesntHave('penyaluran', fn (Builder $q) => $q->whereIn('status', StatusPenyaluran::berjalan()));
     }
 
     public function user(): BelongsTo

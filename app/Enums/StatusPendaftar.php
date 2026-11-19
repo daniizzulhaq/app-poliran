@@ -25,6 +25,19 @@ enum StatusPendaftar: string
         };
     }
 
+    /** Urutan kemajuan; dipakai agar penyaluran tidak menurunkan status pendaftar. */
+    public function tingkat(): int
+    {
+        return match ($this) {
+            self::Terdaftar => 0,
+            self::Direkrut => 1,
+            self::Dilatih => 2,
+            self::NonBersertifikat => 3,
+            self::Bersertifikat => 4,
+            self::Disalurkan => 5,
+        };
+    }
+
     public function color(): string
     {
         return match ($this) {

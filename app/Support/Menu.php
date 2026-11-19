@@ -22,7 +22,8 @@ class Menu
         'Pendaftar & Penyaluran' => [
             ['Pendaftar', 'admin.pendaftar.index', 'kelola-pendaftar', 'admin.pendaftar.*'],
             ['Lowongan', 'admin.lowongan.index', 'lihat-lowongan', 'admin.lowongan.*'],
-            ['Penyaluran', 'admin.penyaluran.index', 'kelola-penyaluran', 'admin.penyaluran.*'],
+            ['Penyaluran', 'admin.penyaluran.index', 'kelola-penyaluran', 'admin.penyaluran.index'],
+            ['Tindak Lanjut Kerja', 'admin.penyaluran.tindak-lanjut', 'kelola-penyaluran', 'admin.penyaluran.tindak-lanjut*'],
         ],
         'Pelatihan' => [
             ['Pelatihan', 'admin.pelatihan.index', 'kelola-pelatihan', 'admin.pelatihan.*'],

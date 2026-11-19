@@ -26,6 +26,7 @@ class LaporanController extends Controller
             'rekap' => $statistik->rekapKecamatan($user),
             'perStatus' => $statistik->perStatus(PencariKerja::visibleTo($user)),
             'ringkasan' => $statistik->ringkasanAdmin(),
+            'retensi' => $statistik->retensi($user),
             'kecamatan' => Kecamatan::orderBy('nama')->pluck('nama', 'id'),
         ]);
     }
@@ -45,6 +46,7 @@ class LaporanController extends Controller
             'rekap' => $statistik->rekapKecamatan($user),
             'perStatus' => $statistik->perStatus(PencariKerja::visibleTo($user)),
             'ringkasan' => $statistik->ringkasanAdmin(),
+            'retensi' => $statistik->retensi($user),
             'dicetakOleh' => $user->name,
         ])->setPaper('a4', 'landscape');
 

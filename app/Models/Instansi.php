@@ -17,7 +17,7 @@ class Instansi extends Model
     protected $table = 'instansi';
 
     protected $fillable = [
-        'user_id', 'nama', 'jenis', 'penanggung_jawab', 'alamat', 'no_wa', 'jenis_dokumen', 'nomor_dokumen',
+        'user_id', 'dibuat_oleh', 'nama', 'jenis', 'penanggung_jawab', 'alamat', 'no_wa', 'jenis_dokumen', 'nomor_dokumen',
         'file_dokumen', 'file_selfie', 'latitude', 'longitude', 'status', 'catatan_survei', 'alasan_tolak',
         'disurvei_oleh', 'disurvei_pada', 'diajukan_pada',
     ];
@@ -38,6 +38,12 @@ class Instansi extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** Petugas yang menginput instansi (jemput bola); null bila instansi mendaftar sendiri. */
+    public function pembuat(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh');
     }
 
     public function surveyor(): BelongsTo

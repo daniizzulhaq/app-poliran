@@ -43,9 +43,12 @@ class DashboardController extends Controller
         if ($user->can('kelola-pendaftar')) {
             $data['perStatus'] = $statistik->perStatus(PencariKerja::visibleTo($user));
             $data['pendaftarBaru'] = PencariKerja::visibleTo($user)->with('kecamatan:id,nama')->latest()->limit(8)->get();
-            $data['penyaluranDiproses'] = Penyaluran::where('status', StatusPenyaluran::Diproses)
+            $data['penyaluranBerjalan'] = Penyaluran::whereIn('status', StatusPenyaluran::berjalan())
                 ->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user))->count();
             $data['pesertaMenunggu'] = PesertaPelatihan::where('status', StatusPeserta::Mendaftar)
+                ->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user))->count();
+            $data['menungguLama'] = PencariKerja::visibleTo($user)->menungguLama()->count();
+            $data['tindakLanjutJatuhTempo'] = Penyaluran::tindakLanjutJatuhTempo()
                 ->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user))->count();
         }
 
