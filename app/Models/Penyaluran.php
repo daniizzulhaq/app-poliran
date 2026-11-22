@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Role;
 use App\Enums\StatusPenyaluran;
 use App\Enums\StatusTindakLanjut;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,6 +43,11 @@ class Penyaluran extends Model
     public function penyalur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'disalurkan_oleh');
+    }
+
+    public function scopeDariAdminUtama(Builder $query): Builder
+    {
+        return $query->whereHas('penyalur', fn (Builder $q) => $q->role(Role::SuperAdmin->value));
     }
 
     public function tindakLanjut(): HasMany

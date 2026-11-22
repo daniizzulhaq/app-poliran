@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PencariKerja;
 
 use App\Enums\StatusPendaftar;
 use App\Http\Controllers\Controller;
+use App\Models\JobListing;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -19,6 +20,7 @@ class DashboardController extends Controller
 
         return view('pencari.dashboard', [
             'pencari' => $pencari,
+            'lowongan' => JobListing::tersedia()->with(['kategori', 'skills'])->latest()->limit(6)->get(),
             'tahapan' => StatusPendaftar::cases(),
         ]);
     }

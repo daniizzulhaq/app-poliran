@@ -28,6 +28,20 @@
     @endisset
 
     <div class="grid gap-4 lg:grid-cols-2">
+        @isset($rekrutmenMasuk)
+            <x-card :title="'Rekrutmen dari Admin Utama ('.$jumlahRekrutmenMasuk.')'" class="lg:col-span-2">
+                <x-slot:actions><x-button :href="route('admin.penyaluran.index', ['status' => 'merekrut', 'dari_admin_utama' => 1])" size="sm">Tindak Lanjuti Rekrutmen</x-button></x-slot:actions>
+                <p class="mb-3 text-sm text-slate-600">Pencari kerja yang direkrut Admin Utama untuk ditindaklanjuti Admin Lapangan sesuai kecamatan domisili.</p>
+                @forelse ($rekrutmenMasuk as $item)
+                    <a href="{{ route('admin.pendaftar.show', $item->pencariKerja) }}" class="flex flex-wrap justify-between gap-2 border-b border-slate-100 py-3 text-sm last:border-0 hover:bg-slate-50">
+                        <span><strong>{{ $item->pencariKerja->nama }}</strong> · {{ $item->pencariKerja->kecamatan->nama }}</span>
+                        <span class="text-brand-700">{{ $item->jobListing->judul }}</span>
+                    </a>
+                @empty
+                    <p class="text-sm text-slate-500">Belum ada rekrutmen dari Admin Utama yang perlu ditindaklanjuti.</p>
+                @endforelse
+            </x-card>
+        @endisset
         @isset($rekap)
             <x-card title="Pendaftar per Kecamatan" :padding="false" class="lg:col-span-2">
                 <x-slot:actions><x-button :href="route('admin.laporan.index')" size="sm" variant="secondary">Laporan & Export</x-button></x-slot:actions>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BerkasController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Instansi;
 use App\Http\Controllers\PencariKerja;
 use App\Http\Controllers\Publik;
@@ -14,10 +15,12 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Halaman publik (lowongan TIDAK pernah tampil di sini)
+| Halaman publik (hanya lowongan aktif dan masih tersedia)
 |--------------------------------------------------------------------------
 */
 Route::get('/', Publik\HomeController::class)->name('home');
+Route::get('/lowongan', [Publik\LowonganController::class, 'index'])->name('public.lowongan.index');
+Route::get('/lowongan/{lowongan}', [Publik\LowonganController::class, 'show'])->name('public.lowongan.show');
 Route::get('/pelatihan', [Publik\PelatihanController::class, 'index'])->name('public.pelatihan.index');
 Route::get('/pelatihan/{pelatihan:slug}', [Publik\PelatihanController::class, 'show'])->name('public.pelatihan.show');
 Route::get('/tentang', [Publik\HalamanController::class, 'tentang'])->name('public.tentang');
@@ -49,6 +52,15 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'aktif'])->group(function () {
     Route::post('/keluar', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [AkunController::class, 'dashboard'])->name('dashboard');
+    Route::middleware('role:super_admin|pencari_kerja')->prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/belum-dibaca', [ChatController::class, 'unread'])->name('unread');
+        Route::get('/minat/{lowongan}', [ChatController::class, 'interest'])->middleware('role:pencari_kerja')->name('interest');
+        Route::post('/lowongan/{lowongan}', [ChatController::class, 'start'])->middleware(['role:pencari_kerja', 'throttle:20,1'])->name('start');
+        Route::get('/{chat}', [ChatController::class, 'show'])->name('show');
+        Route::get('/{chat}/pesan', [ChatController::class, 'messages'])->name('messages');
+        Route::post('/{chat}/pesan', [ChatController::class, 'send'])->middleware('throttle:30,1')->name('send');
+    });
     Route::get('/akun/password', [AkunController::class, 'editPassword'])->name('akun.password.edit');
     Route::put('/akun/password', [AkunController::class, 'updatePassword'])->name('akun.password.update');
 

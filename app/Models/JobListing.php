@@ -88,6 +88,11 @@ class JobListing extends Model
         return $query->where('status', StatusLowongan::Aktif)->whereDate('batas_tanggal', '>=', today());
     }
 
+    public function scopeTersedia(Builder $query): Builder
+    {
+        return $query->aktif()->whereColumn('jumlah_tersalur', '<', 'kuota');
+    }
+
     /** Batasi lowongan yang boleh dilihat user. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {

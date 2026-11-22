@@ -8,7 +8,7 @@
             <x-card title="Data Pendaftar">
                 <dl class="divide-y divide-slate-100">
                     <x-detail label="Status"><x-status :status="$pencari->status" /></x-detail>
-                    <x-detail label="NIK"><span class="font-mono">{{ $pencari->nikTersensor() }}</span></x-detail>
+                    <x-detail label="NIK"><span class="font-mono">{{ $pencari->nik }}</span></x-detail>
                     <x-detail label="Jenis kelamin">{{ $pencari->jenis_kelamin->label() }}</x-detail>
                     <x-detail label="Tanggal lahir">{{ $pencari->tanggal_lahir->translatedFormat('d F Y') }} ({{ $pencari->umur() }} tahun)</x-detail>
                     <x-detail label="Pendidikan">{{ $pencari->pendidikan->label() }}{{ $pencari->jurusan ? ' - '.$pencari->jurusan : '' }}</x-detail>

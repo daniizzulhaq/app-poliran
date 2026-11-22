@@ -16,6 +16,7 @@
             <a href="{{ route('home') }}"><x-logo /></a>
             <nav class="hidden items-center gap-6 text-sm font-medium text-slate-700 md:flex">
                 <a href="{{ route('home') }}" class="hover:text-brand-700">Beranda</a>
+                <a href="{{ route('public.lowongan.index') }}" class="hover:text-brand-700">Lowongan</a>
                 <a href="{{ route('public.pelatihan.index') }}" class="hover:text-brand-700">Pelatihan</a>
                 <a href="{{ route('public.tentang') }}" class="hover:text-brand-700">Tentang</a>
                 <a href="{{ route('public.kontak') }}" class="hover:text-brand-700">Kontak</a>
@@ -35,6 +36,7 @@
         <div x-show="menu" x-cloak class="border-t border-slate-200 bg-white px-4 py-3 md:hidden">
             <nav class="flex flex-col gap-1 text-sm font-medium">
                 <a href="{{ route('home') }}" class="rounded px-2 py-2 hover:bg-slate-50">Beranda</a>
+                <a href="{{ route('public.lowongan.index') }}" class="rounded px-2 py-2 hover:bg-slate-50">Lowongan</a>
                 <a href="{{ route('public.pelatihan.index') }}" class="rounded px-2 py-2 hover:bg-slate-50">Pelatihan</a>
                 <a href="{{ route('public.tentang') }}" class="rounded px-2 py-2 hover:bg-slate-50">Tentang</a>
                 <a href="{{ route('public.kontak') }}" class="rounded px-2 py-2 hover:bg-slate-50">Kontak</a>

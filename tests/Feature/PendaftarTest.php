@@ -52,10 +52,14 @@ it('NIK duplikat ditolak', function () {
         ->assertSessionHasErrors('nik');
 });
 
-it('NIK disensor di tampilan admin', function () {
+it('NIK tampil lengkap di daftar dan detail pendaftar untuk admin berwenang', function () {
     $p = PencariKerja::factory()->diKecamatan($this->kecA)->create(['nik' => '5302014101990001']);
-    $this->actingAs(buatUser(Role::SuperAdmin))->get(route('admin.pendaftar.show', $p))
-        ->assertSee('5302********0001')->assertDontSee('5302014101990001');
+    foreach ([buatUser(Role::SuperAdmin), buatUser(Role::AdminLapangan, [$this->kecA->id])] as $admin) {
+        $this->actingAs($admin);
+        foreach ([route('admin.pendaftar.index'), route('admin.pendaftar.show', $p)] as $url) {
+            $this->get($url)->assertOk()->assertSee('5302014101990001')->assertDontSee('5302********0001');
+        }
+    }
 });
 
 it('pendaftar otomatis masuk daftar admin lapangan kecamatannya saja', function () {

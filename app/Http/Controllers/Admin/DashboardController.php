@@ -41,6 +41,11 @@ class DashboardController extends Controller
         }
 
         if ($user->can('kelola-pendaftar')) {
+            $rekrutmenMasuk = Penyaluran::dariAdminUtama()->where('status', StatusPenyaluran::Merekrut)
+                ->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user));
+            $data['jumlahRekrutmenMasuk'] = (clone $rekrutmenMasuk)->count();
+            $data['rekrutmenMasuk'] = $rekrutmenMasuk->with(['pencariKerja.kecamatan', 'jobListing:id,judul'])
+                ->oldest()->limit(8)->get();
             $data['perStatus'] = $statistik->perStatus(PencariKerja::visibleTo($user));
             $data['pendaftarBaru'] = PencariKerja::visibleTo($user)->with('kecamatan:id,nama')->latest()->limit(8)->get();
             $data['penyaluranBerjalan'] = Penyaluran::whereIn('status', StatusPenyaluran::berjalan())

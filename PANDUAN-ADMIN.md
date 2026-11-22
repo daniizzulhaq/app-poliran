@@ -6,6 +6,14 @@ Masuk di `/masuk`. Menu di sisi kiri menyesuaikan peran Anda. Semua informasi st
 
 ## Super Admin
 
+**Chat Pencari Kerja** — kotak masuk khusus Admin Utama (Super Admin). Pencari kerja memilih lowongan tersedia dan menekan **Chat Admin**; satu percakapan dibuat untuk tiap pasangan akun–lowongan, dengan pesan minat awal. Semua Super Admin dapat melayani percakapan ini. Admin Survei, Admin Lapangan, dan instansi tidak memiliki akses chat.
+
+Buka percakapan untuk membalas pesan, memeriksa kemampuan, pengalaman, pendidikan, CV, dan skor kecocokan dengan lowongan tersebut. **Lihat Detail Lengkap** membuka profil pendaftar; **Kelola Lowongan & Penyaluran** melanjutkan proses kerja yang sudah ada. Skor merupakan panduan awal, bukan keputusan penerimaan otomatis.
+
+**Rekrut & Teruskan ke Admin Lapangan** di halaman chat memasukkan pencari kerja ke tahap *Merekrut*. Tujuan otomatis mengikuti kecamatan domisili pencari kerja, bukan lokasi lowongan. Nama petugas aktif ditampilkan; bila satu kecamatan ditangani beberapa Admin Lapangan, semuanya melihat antrean wilayah yang sama. Pencari kerja menerima keterangan tindak lanjut di chat. Admin Lapangan melihatnya pada panel **Rekrutmen dari Admin Utama** di dashboard dan menu **Penyaluran**. Bila belum ada petugas aktif di wilayah itu, rekrutmen tetap tercatat dan Super Admin mendapat pemberitahuan untuk menetapkan petugas melalui **Akun Admin**.
+
+Pesan baru diperiksa setiap 3 detik tanpa memuat ulang halaman; kotak masuk setiap 5 detik dan jumlah pesan belum dibaca setiap 10 detik. Chat lama tetap dapat dilanjutkan setelah lowongan ditutup. Pemeriksaan otomatis berhenti sementara ketika tab tidak terlihat dan mencoba kembali saat koneksi pulih.
+
 **Akun Admin** — tambah admin, pilih peran:
 - *Admin Survei*: menyurvei instansi & lowongan.
 - *Admin Lapangan*: centang kecamatan tugasnya (boleh lebih dari satu). Centang "Boleh membuat & mengelola pelatihan" bila perlu.
@@ -56,6 +64,8 @@ Anda hanya melihat pendaftar dari kecamatan tugas Anda.
 - Alur status: Terdaftar → Direkrut → Dilatih → Bersertifikat / Non Bersertifikat → Disalurkan.
 
 **Pencocokan & Penyaluran**
+Rekrutmen dari Super Admin masuk otomatis ke wilayah kecamatan domisili pencari kerja. Buka panel **Rekrutmen dari Admin Utama** di dashboard atau filter yang sama pada menu **Penyaluran**, periksa detail pekerja, hubungi pekerja/instansi, lalu lanjutkan tahapnya. Pekerja dari kecamatan lain tetap tidak dapat dibuka atau diproses.
+
 1. Menu **Lowongan** → buka lowongan aktif → tab **Pendaftar Cocok** (urut skor 0–100, dengan rincian kategori/skill/pendidikan/umur). Atau dari detail pendaftar, panel **Lowongan Cocok**.
 2. Klik **Salurkan ke lowongan ini** → penyaluran masuk tahap *Merekrut* (status pendaftar *Direkrut*).
 3. Hubungi instansi & pendaftar lewat tombol **WA (pesan siap kirim)** / Telepon di menu **Penyaluran**. Pesan WhatsApp sudah terisi sesuai tahap; periksa lalu tekan kirim.
@@ -84,12 +94,12 @@ Anda hanya melihat pendaftar dari kecamatan tugas Anda.
 
 - **Pencari kerja**: Daftar → lengkapi profil (NIK, alamat di TTS, minat, kemampuan, CV) → pantau status, pelatihan, dan unduh sertifikat di dashboard.
 - **Instansi**: Daftar → isi data verifikasi + selfie KTP + pin lokasi → tunggu survei → setelah terverifikasi upload lowongan → lihat status lowongan, jumlah tersalur, dan nama pekerja yang disalurkan.
-- Lowongan tidak diumumkan ke publik; pencari kerja tidak melamar langsung — penyaluran dilakukan petugas.
+- Lowongan aktif yang sudah disetujui, belum melewati batas tanggal, dan masih memiliki kuota tampil di beranda, menu **Lowongan**, dan dashboard pencari kerja. Lowongan yang masih disurvei atau ditolak belum tampil. Pencari kerja melengkapi profil lalu memilih **Chat Admin** untuk berkonsultasi dengan Admin Utama; penyaluran tetap dilakukan petugas.
 - Program **gratis**. Petugas tidak pernah meminta uang.
 - **Waspada calo & perdagangan orang**: jangan serahkan KTP/ijazah asli, kerja luar negeri hanya lewat perusahaan penempatan (P3MI) resmi, laporkan perekrut mencurigakan ke Polres atau 110. Materi ini juga tampil di halaman awal dan halaman Tentang.
 
 ## Keamanan data
 
-- NIK selalu ditampilkan tersensor (contoh 5302********0001).
+- NIK ditampilkan lengkap pada daftar dan detail pendaftar bagi admin berwenang, termasuk panel profil di chat Super Admin. Ekspor Excel tetap memakai NIK tersensor.
 - Berkas KTP/NIB, selfie, CV, dan sertifikat tidak bisa dibuka publik; hanya pemilik dan petugas berwenang.
 - Jangan membagikan password. Ganti password lewat menu **Ganti Password** di bagian atas.

@@ -20,7 +20,9 @@ class PenyaluranController extends Controller
     {
         $user = $request->user();
         $status = StatusPenyaluran::tryFrom((string) $request->query('status')) ?? StatusPenyaluran::Merekrut;
-        $terlihat = fn () => Penyaluran::query()->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user));
+        $dariAdminUtama = $request->boolean('dari_admin_utama');
+        $terlihat = fn () => Penyaluran::query()->whereHas('pencariKerja', fn ($q) => $q->visibleTo($user))
+            ->when($dariAdminUtama, fn ($q) => $q->dariAdminUtama());
 
         $jumlah = $terlihat()
             ->selectRaw('status, COUNT(*) AS jumlah')
@@ -37,7 +39,7 @@ class PenyaluranController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.penyaluran.index', compact('daftar', 'status', 'jumlah'));
+        return view('admin.penyaluran.index', compact('daftar', 'status', 'jumlah', 'dariAdminUtama'));
     }
 
     public function store(SalurkanRequest $request, JobListing $lowongan, PenyaluranService $service): RedirectResponse
@@ -47,6 +49,15 @@ class PenyaluranController extends Controller
         $this->authorize('salurkan', $pencari);
 
         $service->salurkan($lowongan, $pencari, $request->user());
+
+        if ($request->user()->isSuperAdmin()) {
+            $pencari->loadMissing('kecamatan');
+            $admins = $pencari->kecamatan->adminLapanganAktif()->pluck('users.name')->implode(', ');
+            $pesan = $pencari->nama.' direkrut untuk "'.$lowongan->judul.'" dan masuk antrean Admin Lapangan Kecamatan '.$pencari->kecamatan->nama.'.';
+            $pesan .= $admins ? ' Ditindaklanjuti oleh: '.$admins.'.' : ' Belum ada Admin Lapangan aktif di kecamatan ini. Tetapkan petugas melalui menu Akun Admin agar dapat ditindaklanjuti.';
+
+            return back()->with('success', $pesan);
+        }
 
         return back()->with('success', $pencari->nama.' direkrut untuk "'.$lowongan->judul.'" (tahap Merekrut). Hubungi instansi dan pendaftar, lalu lanjutkan tahapnya di menu Penyaluran.');
     }

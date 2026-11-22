@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,13 @@ class Menu
         }
 
         $hasil = [];
+        if ($user->isSuperAdmin() || $user->isRole(Role::PencariKerja)) {
+            $hasil['Pesan'][] = [
+                'label' => $user->isSuperAdmin() ? 'Chat Pencari Kerja' : 'Chat Admin Utama',
+                'url' => route('chat.index'),
+                'active' => request()->routeIs('chat.*'),
+            ];
+        }
         foreach (self::ITEMS as $grup => $items) {
             foreach ($items as [$label, $route, $permission, $pola]) {
                 if (! Route::has($route) || ($permission && ! $user->can($permission))) {

@@ -33,7 +33,7 @@
         @forelse ($pendaftar as $item)
             <tr>
                 <td class="font-medium">{{ $item->nama }}</td>
-                <td class="font-mono text-xs">{{ $item->nikTersensor() }}</td>
+                <td class="font-mono text-xs">{{ $item->nik }}</td>
                 <td>{{ $item->kecamatan->nama }}<div class="text-xs text-slate-500">{{ $item->desa->nama }}</div></td>
                 <td>{{ $item->pendidikan->label() }}</td>
                 <td><x-status :status="$item->status" /></td>

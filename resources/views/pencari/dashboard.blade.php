@@ -1,6 +1,11 @@
 <x-layouts.app title="Dashboard Saya">
     <x-page-header title="Dashboard Saya" :subtitle="$pencari?->nama" />
 
+    <section class="mb-8">
+        @include('lowongan._tersedia')
+        <x-button :href="route('chat.index')" variant="secondary" class="mt-4">Chat Saya dengan Admin Utama</x-button>
+    </section>
+
     @if (! $pencari)
         <x-card>
             <p class="font-semibold">Langkah berikutnya: lengkapi profil Anda</p>

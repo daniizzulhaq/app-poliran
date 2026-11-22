@@ -8,9 +8,9 @@ use App\Models\Testimoni;
 use App\Services\PengaturanService;
 use Illuminate\Support\Facades\Cache;
 
-it('halaman awal tampil lengkap tanpa lowongan', function () {
+it('halaman awal tampil lengkap dengan lowongan tersedia', function () {
     buatKecamatan();
-    JobListing::factory()->aktif()->create(['judul' => 'Lowongan Tidak Boleh Tampil']);
+    JobListing::factory()->aktif()->create(['judul' => 'Lowongan Pekerjaan Terbaru']);
     Pelatihan::factory()->create(['nama' => 'Pelatihan Las Dibuka']);
     Pelatihan::factory()->create(['nama' => 'Pelatihan Masih Draft', 'status' => StatusPelatihan::Draft]);
     Testimoni::create(['nama' => 'Yohana', 'isi' => 'Sekarang saya bekerja', 'aktif' => true]);
@@ -27,7 +27,7 @@ it('halaman awal tampil lengkap tanpa lowongan', function () {
         ->assertSee('Yohana')
         ->assertSee('Kontak Layanan')
         ->assertSee('Hati-hati Calo Kerja')->assertSee('110')
-        ->assertDontSee('Lowongan Tidak Boleh Tampil');
+        ->assertSee('Lowongan Pekerjaan Tersedia')->assertSee('Lowongan Pekerjaan Terbaru');
 });
 
 it('halaman tentang, kontak, dan pelatihan bisa dibuka tamu', function () {

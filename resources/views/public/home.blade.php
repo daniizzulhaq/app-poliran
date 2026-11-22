@@ -26,6 +26,10 @@
         </div>
     </section>
 
+    <section id="lowongan" class="mx-auto max-w-6xl px-4 py-12">
+        @include('lowongan._tersedia')
+    </section>
+
     {{-- Untuk siapa --}}
     <section class="mx-auto max-w-6xl px-4 py-16">
         <h2 class="text-center text-2xl font-extrabold sm:text-3xl">Untuk Siapa POLIRAN?</h2>

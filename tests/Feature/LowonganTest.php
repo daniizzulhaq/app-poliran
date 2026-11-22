@@ -60,7 +60,7 @@ it('instansi tidak bisa melihat lowongan instansi lain', function () {
     $this->get(route('instansi.lowongan.index'))->assertSee('Lowongan Saya Sendiri')->assertDontSee('Lowongan Milik Lain');
 });
 
-it('pencari kerja dan tamu tidak bisa membuka data lowongan sama sekali', function () {
+it('pencari kerja dan tamu hanya bisa membuka lowongan melalui halaman publik', function () {
     $lowongan = JobListing::factory()->aktif()->create(['judul' => 'Lowongan Rahasia']);
     $urls = [
         route('admin.lowongan.index'), route('admin.lowongan.show', $lowongan),
@@ -78,7 +78,7 @@ it('pencari kerja dan tamu tidak bisa membuka data lowongan sama sekali', functi
     }
 
     auth()->logout();
-    $this->get(route('home'))->assertOk()->assertDontSee('Lowongan Rahasia');
+    $this->get(route('home'))->assertOk()->assertSee('Lowongan Rahasia');
     $this->get(route('public.pelatihan.index'))->assertOk()->assertDontSee('Lowongan Rahasia');
 });
 

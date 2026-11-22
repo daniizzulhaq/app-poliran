@@ -11,7 +11,7 @@
 - [x] Tahap 7 — Landing page & halaman publik
 - [x] Tahap 8 — Dashboard, laporan & export, review keamanan, halaman error, DEPLOY.md, PANDUAN-ADMIN.md
 
-Test: 91 test Pest hijau (termasuk smoke test semua halaman untuk setiap akun demo).
+Test: 135 test Pest hijau di MySQL (termasuk smoke test semua halaman untuk setiap akun demo dan 12 test chat/rekrutmen lowongan). Uji browser mencakup pesan dua arah tanpa reload, NIK lengkap, penerusan rekrutmen ke Admin Lapangan sesuai domisili, pembatasan wilayah, dan tampilan desktop/ponsel.
 
 ## Keputusan (opsi paling sederhana bila spesifikasi tidak jelas)
 
@@ -40,3 +40,5 @@ Test: 91 test Pest hijau (termasuk smoke test semua halaman untuk setiap akun de
 23. **Lowongan luar TTS / luar negeri**: ACC wajib centang pemeriksaan legalitas (`legalitas_diperiksa_pada`); luar negeri wajib nomor izin P3MI. Menolak tidak perlu centang.
 24. **Jemput bola**: Admin Survei/Super Admin bisa menginput instansi tanpa akun (`instansi.user_id` null, langsung terverifikasi) dan menginput lowongan untuk instansi terverifikasi (langsung aktif, petugas = surveyor).
 25. **Pesan WA siap kirim**: tautan `wa.me/...?text=` berisi template (`App\Support\PesanWa`); aplikasi tetap tidak mengirim pesan otomatis.
+26. **Lowongan publik & chat Admin Utama (22 November 2026)**: lowongan aktif, belum kedaluwarsa, dan belum penuh tampil di beranda, daftar/detail publik, serta dashboard pencari kerja. Data internal survei dan kontak penyedia kerja tidak ditampilkan di halaman lowongan publik. Pencari kerja dengan profil lengkap memulai satu chat per lowongan; pesan minat awal tersimpan otomatis. Chat hanya untuk pemilik akun pencari kerja dan Super Admin (kotak masuk bersama semua Super Admin). Profil, CV, kemampuan, dan rincian pencocokan tersedia di halaman chat admin. Pesan diperiksa tiap 3 detik, kotak masuk 5 detik, badge 10 detik melalui polling JSON tanpa reload; riwayat dimuat bertahap, pesan belum dibaca ditandai saat diambil penerima, kirim ulang memakai UUID agar tidak menggandakan pesan. Chat lama tetap dapat dipakai setelah lowongan ditutup. Jalankan migration baru dan gunakan aset `public/build` terbaru saat deploy.
+27. **NIK admin & penerusan rekrutmen**: NIK tampil lengkap di daftar/detail pendaftar dan panel profil chat Super Admin. Tombol rekrut dari chat memakai alur penyaluran yang sama; rekrutmen Super Admin masuk antrean Admin Lapangan sesuai kecamatan domisili pekerja, ditampilkan di dashboard dan filter Penyaluran. Semua petugas aktif di kecamatan itu dapat menindaklanjuti sesuai kebijakan wilayah yang sudah ada. Pesan keterangan rekrutmen ditambahkan ke chat secara transaksional. Bila belum ada petugas aktif, rekrutmen tetap tercatat dan Super Admin diminta menetapkan petugas; penugasan baru langsung mengikuti antrean wilayah. Chat tetap khusus Super Admin dan pemilik akun pencari kerja.

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\StatusLowongan;
 use App\Enums\StatusPendaftar;
 use App\Enums\StatusPenyaluran;
+use App\Models\JobChat;
 use App\Models\JobListing;
 use App\Models\PencariKerja;
 use App\Models\Penyaluran;
@@ -43,6 +44,21 @@ class PenyaluranService
             ]);
 
             $this->naikkanStatusPendaftar($pencari, StatusPenyaluran::Merekrut, $lowongan, $oleh);
+
+            if ($oleh->isSuperAdmin() && $pencari->user_id) {
+                $chat = JobChat::where('user_id', $pencari->user_id)->where('job_listing_id', $lowongan->id)
+                    ->lockForUpdate()->first();
+                if ($chat) {
+                    $pencari->loadMissing('kecamatan');
+                    $chat->messages()->create([
+                        'sender_id' => $oleh->id,
+                        'is_admin' => true,
+                        'client_id' => 'recruitment-'.$penyaluran->id,
+                        'body' => 'Anda masuk tahap rekrutmen untuk lowongan “'.$lowongan->judul.'”. Proses berikutnya masuk ke antrean Admin Lapangan Kecamatan '.$pencari->kecamatan->nama.' sesuai domisili Anda. Admin Utama akan membantu koordinasi tindak lanjutnya.',
+                    ]);
+                    $chat->update(['last_message_at' => now()]);
+                }
+            }
 
             return $penyaluran;
         });
