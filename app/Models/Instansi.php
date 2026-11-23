@@ -19,13 +19,14 @@ class Instansi extends Model
     protected $fillable = [
         'user_id', 'dibuat_oleh', 'nama', 'jenis', 'penanggung_jawab', 'alamat', 'no_wa', 'jenis_dokumen', 'nomor_dokumen',
         'file_dokumen', 'file_selfie', 'latitude', 'longitude', 'status', 'catatan_survei', 'alasan_tolak',
-        'disurvei_oleh', 'disurvei_pada', 'diajukan_pada',
+        'disurvei_oleh', 'disurvei_pada', 'diajukan_pada', 'tanggal_lahir',
     ];
 
     protected function casts(): array
     {
         return [
             'jenis' => JenisInstansi::class,
+            'tanggal_lahir' => 'date',
             'jenis_dokumen' => JenisDokumen::class,
             'status' => StatusInstansi::class,
             'latitude' => 'float',

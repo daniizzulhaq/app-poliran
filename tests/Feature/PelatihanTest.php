@@ -4,10 +4,13 @@ use App\Enums\Role;
 use App\Enums\StatusPelatihan;
 use App\Enums\StatusPendaftar;
 use App\Enums\StatusPeserta;
+use App\Models\JobListing;
 use App\Models\Kategori;
 use App\Models\Pelatihan;
 use App\Models\PencariKerja;
 use App\Models\PesertaPelatihan;
+use App\Services\JobMatcher;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -81,6 +84,26 @@ it('pendaftaran pelatihan dua kali ditolak', function () {
 
     expect(PesertaPelatihan::count())->toBe(1);
 });
+
+it('pendaftaran pelatihan memeriksa usia profil yang sudah ada', function (string $tanggalLahir, bool $diterima) {
+    $this->travelTo(Carbon::parse('2026-11-23 12:00:00'));
+    $pelatihan = Pelatihan::factory()->create();
+    $pencari = pencariBerakun($this->kecA);
+    $pencari->update(['tanggal_lahir' => $tanggalLahir]);
+
+    $respons = $this->actingAs($pencari->user)
+        ->post(route('pencari.pelatihan.store', $pelatihan), ['alasan' => 'Ingin belajar keterampilan']);
+
+    if ($diterima) {
+        $respons->assertSessionHasNoErrors();
+    } else {
+        $respons->assertSessionHasErrors(['alasan' => 'Pencari kerja dan pencari pelatihan harus berusia minimal 18 tahun.']);
+    }
+    expect(PesertaPelatihan::count())->toBe($diterima ? 1 : 0);
+})->with([
+    'tepat 18 tahun' => ['2008-11-23', true],
+    'kurang satu hari' => ['2008-11-24', false],
+]);
 
 it('tidak bisa daftar pelatihan yang belum dibuka atau lewat batas', function () {
     $draft = Pelatihan::factory()->create(['status' => StatusPelatihan::Draft]);
@@ -160,9 +183,9 @@ it('setelah pelatihan, pendaftar cocok dengan lowongan sesuai kategori pelatihan
     $p = Pelatihan::factory()->create(['kategori_id' => $kategori->id]);
     $pencari = pencariBerakun($this->kecA);
     PesertaPelatihan::create(['pelatihan_id' => $p->id, 'pencari_kerja_id' => $pencari->id, 'alasan' => 'x', 'status' => 'lulus']);
-    $lowongan = \App\Models\JobListing::factory()->aktif()->create(['kategori_id' => $kategori->id]);
+    $lowongan = JobListing::factory()->aktif()->create(['kategori_id' => $kategori->id]);
 
-    $hasil = app(\App\Services\JobMatcher::class)->pendaftarCocok($lowongan, buatUser(Role::SuperAdmin));
+    $hasil = app(JobMatcher::class)->pendaftarCocok($lowongan, buatUser(Role::SuperAdmin));
     expect($hasil->pluck('pencari.id')->all())->toBe([$pencari->id])
         ->and($hasil->first()['rincian']['kategori'])->toBeTrue();
 });

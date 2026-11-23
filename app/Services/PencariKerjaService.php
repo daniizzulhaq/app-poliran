@@ -48,8 +48,8 @@ class PencariKerjaService
                 $this->status->catatAwal($pencari, $oleh, $akun ? 'Mendaftar sendiri' : 'Diinput oleh admin');
             }
 
-            if ($akun && $akun->name !== $pencari->nama) {
-                $akun->update(['name' => $pencari->nama]);
+            if ($akun) {
+                $akun->update(['name' => $pencari->nama, 'tanggal_lahir' => $pencari->tanggal_lahir]);
             }
 
             return $pencari;

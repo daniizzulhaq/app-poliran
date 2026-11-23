@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class RegistrasiService
 {
-    /** @param array{name: string, email: string, phone: string, password: string} $data */
+    /** @param array{name: string, email: string, phone: string, password: string, tanggal_lahir: string} $data */
     public function daftar(array $data, Role $role): User
     {
         return DB::transaction(function () use ($data, $role) {
@@ -16,6 +16,7 @@ class RegistrasiService
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'],
+                'tanggal_lahir' => $data['tanggal_lahir'],
                 'password' => $data['password'],
                 'persetujuan_data_at' => now(),
             ]);

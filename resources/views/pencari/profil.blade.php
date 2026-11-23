@@ -4,7 +4,7 @@
     <form method="POST" action="{{ route('pencari.profil.update') }}" enctype="multipart/form-data" class="space-y-4">
         @csrf
         @method('PUT')
-        @include('pencari._form-profil', ['namaDefault' => $user->name, 'waDefault' => $user->phone])
+        @include('pencari._form-profil', ['namaDefault' => $user->name, 'waDefault' => $user->phone, 'tanggalLahirDefault' => $user->tanggal_lahir?->format('Y-m-d')])
         <x-button size="lg">Simpan Profil</x-button>
     </form>
 </x-layouts.app>

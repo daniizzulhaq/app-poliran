@@ -7,9 +7,11 @@
             Setelah akun dibuat, lengkapi profil Anda agar bisa ikut pelatihan dan disalurkan kerja.
         @endif
     </p>
+    <x-syarat-usia :penyedia="$instansi" class="mb-5" />
     <form method="POST" action="{{ $instansi ? route('register.instansi') : route('register.pencari-kerja') }}" class="space-y-4">
         @csrf
-        <x-input :label="$instansi ? 'Nama Anda (penanggung jawab akun)' : 'Nama lengkap'" name="name" required autofocus />
+        <x-input :label="$instansi ? 'Nama Anda (penanggung jawab akun)' : 'Nama lengkap'" name="name" required autofocus hint="Tulis nama lengkap sesuai KTP." />
+        <x-input label="Tanggal lahir" name="tanggal_lahir" type="date" :max="today()->subYearsNoOverflow(18)->toDateString()" required autocomplete="bday" hint="Isi sesuai KTP. Usia minimal 18 tahun saat mendaftar." />
         <x-input label="Email" name="email" type="email" required autocomplete="username" hint="Dipakai untuk masuk dan atur ulang password." />
         <x-input label="Nomor WhatsApp" name="phone" type="tel" required placeholder="081234567890" />
         <x-input label="Password" name="password" type="password" required autocomplete="new-password" hint="Minimal 8 karakter." />

@@ -4,7 +4,7 @@
     @if (! $instansi)
         <x-card>
             <p class="font-semibold">Langkah berikutnya: lengkapi data verifikasi</p>
-            <p class="mt-1 text-sm text-slate-600">Isi data instansi, upload KTP/NIB, foto selfie memegang KTP, dan pin lokasi usaha. Petugas Polres akan melakukan survei sebelum Anda bisa mengunggah lowongan.</p>
+            <p class="mt-1 text-sm text-slate-600">Isi data instansi, nama dan tanggal lahir penanggung jawab sesuai KTP, serta pin lokasi usaha. Penanggung jawab harus berusia minimal 18 tahun dan sudah memiliki KTP. Petugas Polres akan melakukan survei sebelum Anda bisa mengunggah lowongan.</p>
             <x-button :href="route('instansi.verifikasi.edit')" class="mt-4">Lengkapi Data Verifikasi</x-button>
         </x-card>
     @else

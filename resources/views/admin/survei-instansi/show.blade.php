@@ -14,32 +14,41 @@
                 <dl class="divide-y divide-slate-100">
                     <x-detail label="Jenis">{{ $instansi->jenis->label() }}</x-detail>
                     <x-detail label="Penanggung jawab">{{ $instansi->penanggung_jawab }}</x-detail>
+                    <x-detail label="Tanggal lahir penanggung jawab">{{ $instansi->tanggal_lahir?->translatedFormat('d F Y') ?? 'Belum diisi' }}</x-detail>
                     <x-detail label="No. WhatsApp">
                         {{ $instansi->no_wa }}
                         <a href="https://wa.me/{{ \App\Models\PencariKerja::formatWa($instansi->no_wa) }}" target="_blank" rel="noopener" class="ml-2 text-green-700 hover:underline">Chat WA</a>
                     </x-detail>
                     <x-detail label="Email akun">{{ $instansi->user?->email ?? 'Tanpa akun - diinput petugas '.($instansi->pembuat?->name ?? '') }}</x-detail>
                     <x-detail label="Alamat">{{ $instansi->alamat }}</x-detail>
-                    <x-detail label="Dokumen">{{ $instansi->jenis_dokumen->label() }} - {{ $instansi->nomor_dokumen }}</x-detail>
+                    @if ($instansi->jenis_dokumen)
+                        <x-detail label="Dokumen">{{ $instansi->jenis_dokumen->label() }} - {{ $instansi->nomor_dokumen }}</x-detail>
+                    @endif
                     <x-detail label="Diajukan">{{ $instansi->diajukan_pada?->format('d/m/Y H:i') }}</x-detail>
                     <x-detail label="Jumlah lowongan">{{ $instansi->job_listings_count }}</x-detail>
                 </dl>
             </x-card>
 
-            <x-card title="Dokumen">
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <p class="mb-2 text-sm font-medium">{{ $instansi->jenis_dokumen->label() }}</p>
-                        <a href="{{ route('berkas.instansi', [$instansi, 'dokumen']) }}" target="_blank" class="block rounded-lg border border-slate-200 p-3 text-center text-sm text-brand-700 hover:bg-brand-50">Buka berkas {{ $instansi->jenis_dokumen->label() }}</a>
+            @if ($instansi->file_dokumen || $instansi->file_selfie)
+                <x-card title="Dokumen">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        @if ($instansi->file_dokumen)
+                            <div>
+                                <p class="mb-2 text-sm font-medium">{{ $instansi->jenis_dokumen?->label() ?? 'Dokumen' }}</p>
+                                <a href="{{ route('berkas.instansi', [$instansi, 'dokumen']) }}" target="_blank" class="block rounded-lg border border-slate-200 p-3 text-center text-sm text-brand-700 hover:bg-brand-50">Buka berkas {{ $instansi->jenis_dokumen?->label() ?? 'dokumen' }}</a>
+                            </div>
+                        @endif
+                        @if ($instansi->file_selfie)
+                            <div>
+                                <p class="mb-2 text-sm font-medium">Selfie memegang KTP</p>
+                                <a href="{{ route('berkas.instansi', [$instansi, 'selfie']) }}" target="_blank">
+                                    <img src="{{ route('berkas.instansi', [$instansi, 'selfie']) }}" alt="Selfie penanggung jawab" class="max-h-64 rounded-lg border border-slate-200 object-contain">
+                                </a>
+                            </div>
+                        @endif
                     </div>
-                    <div>
-                        <p class="mb-2 text-sm font-medium">Selfie memegang KTP</p>
-                        <a href="{{ route('berkas.instansi', [$instansi, 'selfie']) }}" target="_blank">
-                            <img src="{{ route('berkas.instansi', [$instansi, 'selfie']) }}" alt="Selfie penanggung jawab" class="max-h-64 rounded-lg border border-slate-200 object-contain">
-                        </a>
-                    </div>
-                </div>
-            </x-card>
+                </x-card>
+            @endif
 
             <x-card title="Lokasi Usaha">
                 <x-slot:actions>

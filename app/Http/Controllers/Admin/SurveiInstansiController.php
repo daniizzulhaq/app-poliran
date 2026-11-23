@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\JenisDokumen;
 use App\Enums\JenisInstansi;
 use App\Enums\StatusInstansi;
 use App\Http\Controllers\Controller;
@@ -37,13 +36,12 @@ class SurveiInstansiController extends Controller
     {
         return view('admin.survei-instansi.create', [
             'jenisOptions' => JenisInstansi::options(),
-            'dokumenOptions' => JenisDokumen::options(),
         ]);
     }
 
     public function store(InstansiPetugasRequest $request, InstansiService $service): RedirectResponse
     {
-        $instansi = $service->buatOlehPetugas($request->user(), $request->validated(), $request->file('file_dokumen'), $request->file('file_selfie'));
+        $instansi = $service->buatOlehPetugas($request->user(), $request->validated());
 
         return redirect()->route('admin.survei-instansi.show', $instansi)
             ->with('success', 'Instansi disimpan dan terverifikasi. Sekarang lowongannya bisa diinput di menu Lowongan.');

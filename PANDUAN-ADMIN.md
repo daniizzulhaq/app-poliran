@@ -35,11 +35,11 @@ Super Admin juga bisa melakukan semua tugas admin lain untuk semua kecamatan.
 
 **Survei Instansi**
 1. Buka tab *Menunggu Survei*, klik **Survei**.
-2. Periksa data, buka berkas KTP/NIB dan selfie, lihat lokasi di peta (tombol **Buka di Google Maps** untuk navigasi ke lokasi).
+2. Periksa data, nama dan tanggal lahir penanggung jawab sesuai KTP (usia minimal 18 tahun dan sudah memiliki KTP), serta lokasi di peta (tombol **Buka di Google Maps** untuk navigasi ke lokasi). Pendaftaran baru tidak meminta unggahan KTP/NIB maupun selfie.
 3. Isi catatan survei, pilih **ACC** atau **Tolak** (alasan wajib — akan dibaca instansi agar bisa memperbaiki dan mengirim ulang).
 
 **Jemput bola** — usaha yang Anda datangi langsung dan belum punya akun:
-1. **Survei Instansi** → **+ Tambah Instansi (Jemput Bola)**: isi data, foto KTP/NIB, foto penanggung jawab memegang KTP, pin lokasi, dan catatan survei. Instansi langsung *Terverifikasi*.
+1. **Survei Instansi** → **+ Tambah Instansi (Jemput Bola)**: isi data, nama dan tanggal lahir penanggung jawab sesuai KTP (usia minimal 18 tahun), pin lokasi, dan catatan survei. Tidak perlu unggahan KTP/NIB atau selfie. Instansi langsung *Terverifikasi*.
 2. Di detail instansi (atau menu **Lowongan** → **+ Input Lowongan**) isi lowongannya. Lowongan langsung *Aktif* atas nama Anda.
 
 **Survei Lowongan**
@@ -92,8 +92,8 @@ Rekrutmen dari Super Admin masuk otomatis ke wilayah kecamatan domisili pencari 
 
 ## Untuk dijelaskan ke masyarakat
 
-- **Pencari kerja**: Daftar → lengkapi profil (NIK, alamat di TTS, minat, kemampuan, CV) → pantau status, pelatihan, dan unduh sertifikat di dashboard.
-- **Instansi**: Daftar → isi data verifikasi + selfie KTP + pin lokasi → tunggu survei → setelah terverifikasi upload lowongan → lihat status lowongan, jumlah tersalur, dan nama pekerja yang disalurkan.
+- **Pencari kerja / pelatihan**: Daftar dengan nama dan tanggal lahir sesuai KTP (usia minimal 18 tahun dan sudah memiliki KTP) → lengkapi profil (NIK, alamat di TTS, minat, kemampuan, CV) → pantau status, pelatihan, dan unduh sertifikat di dashboard.
+- **Instansi**: Daftar dengan nama dan tanggal lahir sesuai KTP (usia minimal 18 tahun dan sudah memiliki KTP) → isi data verifikasi + pin lokasi, tanpa unggahan dokumen atau selfie → tunggu survei → setelah terverifikasi upload lowongan → lihat status lowongan, jumlah tersalur, dan nama pekerja yang disalurkan.
 - Lowongan aktif yang sudah disetujui, belum melewati batas tanggal, dan masih memiliki kuota tampil di beranda, menu **Lowongan**, dan dashboard pencari kerja. Lowongan yang masih disurvei atau ditolak belum tampil. Pencari kerja melengkapi profil lalu memilih **Chat Admin** untuk berkonsultasi dengan Admin Utama; penyaluran tetap dilakukan petugas.
 - Program **gratis**. Petugas tidak pernah meminta uang.
 - **Waspada calo & perdagangan orang**: jangan serahkan KTP/ijazah asli, kerja luar negeri hanya lewat perusahaan penempatan (P3MI) resmi, laporkan perekrut mencurigakan ke Polres atau 110. Materi ini juga tampil di halaman awal dan halaman Tentang.

@@ -19,7 +19,8 @@ it('halaman awal tampil lengkap dengan lowongan tersedia', function () {
         ->assertSee('Polisi Peduli Pengangguran')
         ->assertSee('GRATIS', false)
         ->assertSee('Untuk Siapa POLIRAN?')
-        ->assertSeeInOrder(['Tentang POLIRAN', 'Lowongan Pekerjaan Tersedia', 'Pelatihan yang Tersedia', 'Untuk Siapa POLIRAN?', 'Pencari Kerja', 'Pencari Pelatihan', 'Pencari Pekerja'])
+        ->assertSee('Usia minimal 18 tahun.')
+        ->assertSeeInOrder(['Tentang POLIRAN', 'Lowongan Pekerjaan Tersedia', 'Pelatihan yang Tersedia', 'Untuk Siapa POLIRAN?', 'Pencari Kerja', 'Pencari Pelatihan', 'Penyedia Kerja'])
         ->assertSee('memeriksa kompetensi Anda')->assertDontSee('kecocokan kemampuan')
         ->assertSee('warga sudah disalurkan kerja')
         ->assertSee('Sambutan Kapolres')
@@ -35,8 +36,8 @@ it('halaman tentang, kontak, dan pelatihan bisa dibuka tamu', function () {
     $p = Pelatihan::factory()->create();
     $this->get(route('public.tentang'))->assertOk();
     $this->get(route('public.kontak'))->assertOk();
-    $this->get(route('public.pelatihan.index'))->assertOk()->assertSee($p->nama);
-    $this->get(route('public.pelatihan.show', $p))->assertOk();
+    $this->get(route('public.pelatihan.index'))->assertOk()->assertSee($p->nama)->assertSee('Usia minimal 18 tahun.');
+    $this->get(route('public.pelatihan.show', $p))->assertOk()->assertSee('Usia minimal 18 tahun.');
 });
 
 it('pelatihan draft tidak bisa dibuka publik', function () {

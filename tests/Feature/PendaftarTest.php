@@ -6,6 +6,7 @@ use App\Enums\StatusPendaftar;
 use App\Models\Kategori;
 use App\Models\PencariKerja;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -33,11 +34,39 @@ it('pencari kerja bisa mengisi profil dan otomatis berstatus terdaftar', functio
 
     $pencari = $user->fresh()->pencariKerja;
     expect($pencari->status)->toBe(StatusPendaftar::Terdaftar)
-        ->and($pencari->riwayatStatus)->toHaveCount(1);
+        ->and($pencari->riwayatStatus)->toHaveCount(1)
+        ->and($user->fresh()->tanggal_lahir->toDateString())->toBe('1999-01-01');
     Storage::disk('local')->assertExists($pencari->cv_path);
 
     $this->actingAs($user->fresh())->get(route('pencari.dashboard'))->assertOk()->assertSee('Status saat ini');
 });
+
+it('syarat usia 18 tahun berlaku pada profil mandiri dan input petugas', function (string $tanggalLahir, bool $diterima) {
+    $this->travelTo(Carbon::parse('2026-11-23 12:00:00'));
+    $data = dataProfil($this->kecA, ['tanggal_lahir' => $tanggalLahir]);
+
+    $respons = $this->actingAs(buatUser(Role::PencariKerja))->put(route('pencari.profil.update'), $data);
+    if ($diterima) {
+        $respons->assertSessionHasNoErrors();
+    } else {
+        $respons->assertSessionHasErrors('tanggal_lahir');
+    }
+
+    $data['nik'] = '5302014101990002';
+    $respons = $this->actingAs(buatUser(Role::AdminLapangan, [$this->kecA->id]))
+        ->post(route('admin.pendaftar.store'), $data + ['persetujuan' => '1', 'persetujuan_cara' => 'lisan']);
+    if ($diterima) {
+        $respons->assertSessionHasNoErrors();
+    } else {
+        $respons->assertSessionHasErrors('tanggal_lahir');
+    }
+
+    expect(PencariKerja::count())->toBe($diterima ? 2 : 0);
+})->with([
+    'tepat 18 tahun' => ['2008-11-23', true],
+    'lebih dari 18 tahun' => ['2000-01-01', true],
+    'kurang satu hari' => ['2008-11-24', false],
+]);
 
 it('desa harus milik kecamatan yang dipilih', function () {
     $this->actingAs(buatUser(Role::PencariKerja))

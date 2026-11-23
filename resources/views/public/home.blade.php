@@ -59,11 +59,12 @@
     <section class="mx-auto max-w-6xl px-4 py-16">
         <h2 class="text-center text-2xl font-extrabold sm:text-3xl">Untuk Siapa POLIRAN?</h2>
         <p class="mt-3 text-center text-slate-600">Pilih layanan sesuai kebutuhan Anda. Semua layanan gratis.</p>
+        <x-syarat-usia class="mx-auto mt-4 max-w-3xl text-center" />
         <div class="mt-10 grid gap-6 md:grid-cols-3">
             @foreach ([
                 ['🧑‍🔧', 'Pencari Kerja', 'Warga TTS yang ingin bekerja. Daftar, lengkapi profil, dan petugas di kecamatan Anda akan membantu.', 'Daftar sebagai pencari kerja', route('register.pencari-kerja')],
                 ['📚', 'Pencari Pelatihan', 'Ingin menambah keterampilan? Pilih pelatihan yang dibuka dan daftar langsung dengan akun Anda.', 'Daftar sebagai pencari pelatihan', route('public.pelatihan.index')],
-                ['🏢', 'Pencari Pekerja', 'Perusahaan, UMKM, perorangan, atau instansi pemerintah yang membutuhkan pekerja. Daftar sebagai penyedia kerja untuk membuka lowongan setelah verifikasi petugas.', 'Daftar sebagai pencari pekerja', route('register.instansi')],
+                ['🏢', 'Penyedia Kerja', 'Perusahaan, UMKM, perorangan, atau instansi pemerintah yang membutuhkan pekerja. Daftar sebagai penyedia kerja untuk membuka lowongan setelah verifikasi petugas.', 'Daftar sebagai penyedia kerja', route('register.instansi')],
             ] as [$ikon, $judul, $teks, $tombol, $url])
                 <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <span class="text-4xl">{{ $ikon }}</span>
@@ -122,7 +123,7 @@
         <div class="mx-auto max-w-4xl px-4">
             <h2 class="text-center text-2xl font-extrabold text-white sm:text-3xl">Cara Daftar</h2>
             <div class="mt-6 flex flex-wrap justify-center gap-2">
-                @foreach (['pencari' => 'Pencari Kerja', 'pelatihan' => 'Pencari Pelatihan', 'instansi' => 'Pencari Pekerja'] as $kunci => $label)
+                @foreach (['pencari' => 'Pencari Kerja', 'pelatihan' => 'Pencari Pelatihan', 'instansi' => 'Penyedia Kerja'] as $kunci => $label)
                     <button type="button" @click="tab = '{{ $kunci }}'" :class="tab === '{{ $kunci }}' ? 'bg-gold-400 text-brand-900' : 'bg-white/10 text-white hover:bg-white/20'" class="rounded-full px-4 py-2 text-sm font-semibold">{{ $label }}</button>
                 @endforeach
             </div>

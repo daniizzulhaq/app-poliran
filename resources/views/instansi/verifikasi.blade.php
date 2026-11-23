@@ -15,10 +15,10 @@
     @endif
 
     @if ($bisaUbah)
-        <form method="POST" action="{{ route('instansi.verifikasi.update') }}" enctype="multipart/form-data" class="space-y-4">
+        <form method="POST" action="{{ route('instansi.verifikasi.update') }}" class="space-y-4">
             @csrf
             @method('PUT')
-            @include('instansi.partials.form-instansi', ['namaPj' => $user->name, 'waDefault' => $user->phone])
+            @include('instansi.partials.form-instansi', ['namaPj' => $user->name, 'waDefault' => $user->phone, 'tanggalLahirDefault' => $user->tanggal_lahir?->format('Y-m-d')])
 
             <x-button size="lg">{{ $instansi ? 'Kirim Ulang untuk Disurvei' : 'Kirim untuk Disurvei' }}</x-button>
         </form>
@@ -28,9 +28,9 @@
                 <x-detail label="Nama">{{ $instansi->nama }}</x-detail>
                 <x-detail label="Jenis">{{ $instansi->jenis->label() }}</x-detail>
                 <x-detail label="Penanggung jawab">{{ $instansi->penanggung_jawab }}</x-detail>
+                <x-detail label="Tanggal lahir penanggung jawab">{{ $instansi->tanggal_lahir?->translatedFormat('d F Y') ?? 'Belum diisi' }}</x-detail>
                 <x-detail label="No. WhatsApp">{{ $instansi->no_wa }}</x-detail>
                 <x-detail label="Alamat">{{ $instansi->alamat }}</x-detail>
-                <x-detail label="Dokumen">{{ $instansi->jenis_dokumen->label() }} - {{ $instansi->nomor_dokumen }}</x-detail>
             </dl>
             <x-map-view :lat="$instansi->latitude" :lng="$instansi->longitude" class="mt-4" />
             @if ($instansi->status === \App\Enums\StatusInstansi::MenungguSurvey)

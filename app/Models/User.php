@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Role;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -12,11 +13,11 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'is_active', 'persetujuan_data_at',
+        'name', 'email', 'phone', 'tanggal_lahir', 'password', 'is_active', 'persetujuan_data_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -29,6 +30,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'persetujuan_data_at' => 'datetime',
+            'tanggal_lahir' => 'date',
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];

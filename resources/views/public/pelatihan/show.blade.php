@@ -31,6 +31,7 @@
                         <div><dt class="text-slate-500">Batas pendaftaran</dt><dd class="font-medium">{{ $pelatihan->batas_pendaftaran->translatedFormat('d F Y') }}</dd></div>
                         <div><dt class="text-slate-500">Biaya</dt><dd class="font-bold text-green-700">GRATIS</dd></div>
                     </dl>
+                    <x-syarat-usia class="mt-4" />
                     @if ($pelatihan->bisaDidaftar())
                         <x-button :href="route('pencari.pelatihan.daftar', $pelatihan)" size="lg" class="mt-5 w-full">Daftar Pelatihan</x-button>
                         <p class="mt-2 text-center text-xs text-slate-500">Wajib masuk dengan akun pencari kerja. Belum punya akun? <a href="{{ route('register.pencari-kerja') }}" class="text-brand-600 underline">Daftar gratis</a></p>

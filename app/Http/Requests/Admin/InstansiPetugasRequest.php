@@ -16,8 +16,6 @@ class InstansiPetugasRequest extends VerifikasiInstansiRequest
     {
         return [
             ...parent::rules(),
-            'file_dokumen' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
-            'file_selfie' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:4096'],
             'catatan_survei' => ['required', 'string', 'max:2000'],
         ];
     }

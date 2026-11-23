@@ -1,10 +1,11 @@
 {{-- Field profil pendaftar. Variabel: $pencari (nullable), $namaDefault, $waDefault, opsi dari OpsiForm::pendaftar() --}}
 <x-card title="Data Diri">
+    <x-syarat-usia class="mb-4" />
     <div class="grid gap-4 sm:grid-cols-2">
         <x-input label="Nama lengkap (sesuai KTP)" name="nama" :value="$pencari?->nama ?? $namaDefault" required />
         <x-input label="NIK" name="nik" :value="$pencari?->nik" required inputmode="numeric" maxlength="16" hint="16 digit sesuai KTP." />
         <x-select label="Jenis kelamin" name="jenis_kelamin" :options="$jenisKelaminOptions" :value="$pencari?->jenis_kelamin" required />
-        <x-input label="Tanggal lahir" name="tanggal_lahir" type="date" :value="$pencari?->tanggal_lahir?->format('Y-m-d')" required />
+        <x-input label="Tanggal lahir" name="tanggal_lahir" type="date" :value="$pencari?->tanggal_lahir?->format('Y-m-d') ?? $tanggalLahirDefault ?? null" :max="today()->subYearsNoOverflow(18)->toDateString()" required hint="Isi sesuai KTP. Usia minimal 18 tahun." />
         <x-select label="Pendidikan terakhir" name="pendidikan" :options="$pendidikanOptions" :value="$pencari?->pendidikan" required />
         <x-input label="Jurusan" name="jurusan" :value="$pencari?->jurusan" hint="Kosongkan bila tidak ada." />
         <x-input label="No. WhatsApp" name="no_wa" :value="$pencari?->no_wa ?? $waDefault" :required="$waWajib ?? true" />

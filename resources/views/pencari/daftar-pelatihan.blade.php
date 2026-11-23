@@ -1,5 +1,6 @@
 <x-layouts.app :title="'Daftar: '.$pelatihan->nama">
     <x-page-header :title="'Daftar Pelatihan: '.$pelatihan->nama" :back="route('public.pelatihan.show', $pelatihan)" />
+    <x-syarat-usia class="mb-4" />
 
     @if ($sudah)
         <x-empty message="Anda sudah terdaftar di pelatihan ini.">

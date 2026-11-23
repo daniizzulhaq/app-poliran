@@ -47,6 +47,9 @@ class PelatihanService
     /** Pencari kerja mendaftar. Satu orang satu kali per pelatihan. */
     public function daftar(Pelatihan $pelatihan, PencariKerja $pencari, string $alasan, ?string $pengalaman): PesertaPelatihan
     {
+        if ($pencari->tanggal_lahir->gt(today()->subYearsNoOverflow(18))) {
+            throw ValidationException::withMessages(['alasan' => 'Pencari kerja dan pencari pelatihan harus berusia minimal 18 tahun.']);
+        }
         if (! $pelatihan->bisaDidaftar()) {
             throw ValidationException::withMessages(['alasan' => 'Pendaftaran pelatihan ini sudah ditutup.']);
         }

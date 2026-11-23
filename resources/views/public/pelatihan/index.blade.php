@@ -7,6 +7,7 @@
     </section>
 
     <section class="mx-auto max-w-6xl px-4 py-10">
+        <x-syarat-usia class="mb-6" />
         @if ($kategori->isNotEmpty())
             <div class="mb-6 flex flex-wrap gap-2">
                 <a href="{{ route('public.pelatihan.index') }}" @class(['rounded-full px-3 py-1.5 text-sm font-medium', 'bg-brand-700 text-white' => ! request('kategori'), 'bg-slate-100' => request('kategori')])>Semua</a>

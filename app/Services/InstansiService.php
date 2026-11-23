@@ -5,44 +5,33 @@ namespace App\Services;
 use App\Enums\StatusInstansi;
 use App\Models\Instansi;
 use App\Models\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
 class InstansiService
 {
-    public function __construct(private FileService $files) {}
-
     /**
      * Simpan data verifikasi dan (kembali) ajukan untuk disurvei.
      *
      * @param  array<string, mixed>  $data
      */
-    public function ajukan(User $user, array $data, ?UploadedFile $dokumen, ?UploadedFile $selfie): Instansi
+    public function ajukan(User $user, array $data): Instansi
     {
-        return DB::transaction(function () use ($user, $data, $dokumen, $selfie) {
+        return DB::transaction(function () use ($user, $data) {
             $instansi = $user->instansi ?? new Instansi(['user_id' => $user->id]);
 
             $instansi->fill([
                 'nama' => $data['nama'],
                 'jenis' => $data['jenis'],
                 'penanggung_jawab' => $data['penanggung_jawab'],
+                'tanggal_lahir' => $data['tanggal_lahir'],
                 'alamat' => $data['alamat'],
                 'no_wa' => $data['no_wa'],
-                'jenis_dokumen' => $data['jenis_dokumen'],
-                'nomor_dokumen' => $data['nomor_dokumen'],
                 'latitude' => $data['latitude'],
                 'longitude' => $data['longitude'],
                 'status' => StatusInstansi::MenungguSurvey,
                 'alasan_tolak' => null,
                 'diajukan_pada' => now(),
             ]);
-
-            if ($dokumen) {
-                $instansi->file_dokumen = $this->files->simpanPrivate($dokumen, 'instansi/dokumen', $instansi->file_dokumen);
-            }
-            if ($selfie) {
-                $instansi->file_selfie = $this->files->simpanPrivate($selfie, 'instansi/selfie', $instansi->file_selfie);
-            }
 
             $instansi->save();
 
@@ -55,21 +44,18 @@ class InstansiService
      *
      * @param  array<string, mixed>  $data
      */
-    public function buatOlehPetugas(User $petugas, array $data, UploadedFile $dokumen, UploadedFile $selfie): Instansi
+    public function buatOlehPetugas(User $petugas, array $data): Instansi
     {
-        return DB::transaction(function () use ($petugas, $data, $dokumen, $selfie) {
+        return DB::transaction(function () use ($petugas, $data) {
             return Instansi::create([
                 'user_id' => null,
                 'dibuat_oleh' => $petugas->id,
                 'nama' => $data['nama'],
                 'jenis' => $data['jenis'],
                 'penanggung_jawab' => $data['penanggung_jawab'],
+                'tanggal_lahir' => $data['tanggal_lahir'],
                 'alamat' => $data['alamat'],
                 'no_wa' => $data['no_wa'],
-                'jenis_dokumen' => $data['jenis_dokumen'],
-                'nomor_dokumen' => $data['nomor_dokumen'],
-                'file_dokumen' => $this->files->simpanPrivate($dokumen, 'instansi/dokumen'),
-                'file_selfie' => $this->files->simpanPrivate($selfie, 'instansi/selfie'),
                 'latitude' => $data['latitude'],
                 'longitude' => $data['longitude'],
                 'status' => StatusInstansi::Terverifikasi,
