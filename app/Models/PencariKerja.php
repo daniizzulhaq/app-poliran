@@ -134,6 +134,24 @@ class PencariKerja extends Model
         return (int) $this->tanggal_lahir->diffInYears(today());
     }
 
+    /** Isian wajib profil; kemampuan tambahan dan CV tetap opsional. */
+    public function profilLengkap(): bool
+    {
+        foreach (['nama', 'nik', 'jenis_kelamin', 'tanggal_lahir', 'pendidikan', 'no_wa', 'kecamatan_id', 'desa_id', 'alamat_detail'] as $field) {
+            if (blank($this->{$field})) {
+                return false;
+            }
+        }
+
+        if ($this->tanggal_lahir->gt(today()->subYearsNoOverflow(18))) {
+            return false;
+        }
+
+        $this->loadMissing('kategori:id');
+
+        return $this->kategori->isNotEmpty();
+    }
+
     public function noWaInternasional(): ?string
     {
         return self::formatWa($this->no_wa);

@@ -42,7 +42,7 @@
             </button>
             <p class="truncate text-sm font-semibold text-slate-700">{{ $title }}</p>
             <div class="flex items-center gap-2">
-                @if (auth()->user()->isSuperAdmin() || auth()->user()->isRole(\App\Enums\Role::PencariKerja))
+                @if (auth()->user()->bisaChat())
                     <a href="{{ route('chat.index') }}" x-data="chatBadge(@js(route('chat.unread')))" class="flex items-center gap-1 rounded-lg px-2 py-2 text-sm font-semibold text-brand-700" aria-label="Buka chat lowongan">
                         Chat <span x-show="count > 0" x-cloak x-text="count > 99 ? '99+' : count" class="rounded-full bg-red-600 px-2 py-0.5 text-xs text-white"></span>
                     </a>

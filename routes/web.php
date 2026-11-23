@@ -11,6 +11,7 @@ use App\Http\Controllers\Instansi;
 use App\Http\Controllers\PencariKerja;
 use App\Http\Controllers\Publik;
 use App\Http\Controllers\WilayahController;
+use App\Http\Middleware\EnsureProfilLengkapUntukChat;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,7 +53,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'aktif'])->group(function () {
     Route::post('/keluar', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [AkunController::class, 'dashboard'])->name('dashboard');
-    Route::middleware('role:super_admin|pencari_kerja')->prefix('chat')->name('chat.')->group(function () {
+    Route::middleware(['role:super_admin|pencari_kerja', EnsureProfilLengkapUntukChat::class])->prefix('chat')->name('chat.')->group(function () {
         Route::get('/', [ChatController::class, 'index'])->name('index');
         Route::get('/belum-dibaca', [ChatController::class, 'unread'])->name('unread');
         Route::get('/minat/{lowongan}', [ChatController::class, 'interest'])->middleware('role:pencari_kerja')->name('interest');

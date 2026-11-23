@@ -5,6 +5,7 @@ use App\Enums\StatusLowongan;
 use App\Models\ChatMessage;
 use App\Models\JobChat;
 use App\Models\JobListing;
+use App\Models\Kategori;
 use App\Models\PencariKerja;
 use App\Models\Penyaluran;
 use App\Models\Skill;
@@ -14,7 +15,8 @@ use Illuminate\Support\Str;
 function pencariChat(): User
 {
     $user = buatUser(Role::PencariKerja);
-    PencariKerja::factory()->create(['user_id' => $user->id]);
+    $pencari = PencariKerja::factory()->create(['user_id' => $user->id]);
+    $pencari->kategori()->attach(Kategori::firstOrCreate(['nama' => 'Minat Kerja Umum']));
 
     return $user;
 }
@@ -58,6 +60,81 @@ it('tamu harus masuk dan pekerja harus memiliki profil untuk memulai chat', func
     $this->post(route('chat.start', $lowongan))->assertRedirect(route('login'));
     $this->actingAs(buatUser(Role::PencariKerja))->post(route('chat.start', $lowongan))->assertRedirect(route('pencari.profil.edit'));
     expect(JobChat::count())->toBe(0);
+});
+
+it('seluruh akses chat pekerja diarahkan melengkapi profil tanpa membaca atau mengirim pesan', function () {
+    $user = buatUser(Role::PencariKerja);
+    $lowongan = JobListing::factory()->aktif()->create();
+    $chat = JobChat::create(['user_id' => $user->id, 'job_listing_id' => $lowongan->id, 'last_message_at' => now()]);
+    $message = $chat->messages()->create([
+        'sender_id' => buatUser(Role::SuperAdmin)->id, 'client_id' => (string) Str::uuid(),
+        'is_admin' => true, 'body' => 'Pesan admin sebelumnya',
+    ]);
+
+    $this->actingAs($user);
+    foreach ([route('chat.index'), route('chat.interest', $lowongan), route('chat.show', $chat)] as $url) {
+        $this->get($url)->assertRedirect(route('pencari.profil.edit'))
+            ->assertSessionHas('error', fn ($pesan) => str_contains($pesan, 'Lengkapi profil Anda terlebih dahulu'));
+    }
+    foreach ([route('chat.index'), route('chat.unread'), route('chat.messages', $chat)] as $url) {
+        $this->getJson($url)->assertForbidden()->assertJsonPath('redirect_url', route('pencari.profil.edit'));
+    }
+    $this->postJson(route('chat.send', $chat), ['body' => 'Percobaan pesan', 'client_id' => (string) Str::uuid()])->assertForbidden();
+    $this->post(route('chat.start', $lowongan))->assertRedirect(route('pencari.profil.edit'));
+
+    expect(JobChat::count())->toBe(1)
+        ->and($chat->messages()->count())->toBe(1)
+        ->and($message->fresh()->read_at)->toBeNull();
+});
+
+it('profil yang masih kurang harus dilengkapi sebelum chat', function (string $kekurangan) {
+    $user = pencariChat();
+    $pencari = $user->pencariKerja;
+    match ($kekurangan) {
+        'whatsapp' => $pencari->update(['no_wa' => null]),
+        'alamat' => $pencari->update(['alamat_detail' => '']),
+        'minat' => $pencari->kategori()->detach(),
+        'usia' => $pencari->update(['tanggal_lahir' => today()->subYearsNoOverflow(18)->addDay()]),
+    };
+
+    $this->actingAs($user->fresh())->get(route('chat.index'))->assertRedirect(route('pencari.profil.edit'));
+    $this->post(route('chat.start', JobListing::factory()->aktif()->create()))->assertRedirect(route('pencari.profil.edit'));
+    expect(JobChat::count())->toBe(0);
+})->with(['whatsapp', 'alamat', 'minat', 'usia']);
+
+it('dashboard mendahulukan kelengkapan profil dan menyembunyikan akses chat sampai siap', function () {
+    $this->actingAs(buatUser(Role::PencariKerja))->get(route('pencari.dashboard'))->assertOk()
+        ->assertSeeInOrder(['Lengkapi profil untuk membuka chat admin', 'Lengkapi Profil', 'Lowongan Pekerjaan Tersedia'])
+        ->assertSee('Chat dengan Admin Utama tersedia setelah profil Anda lengkap.')
+        ->assertDontSee('href="'.route('chat.index').'"', false)
+        ->assertDontSee('chatBadge(', false);
+
+    $this->actingAs(pencariChat())->get(route('pencari.dashboard'))->assertOk()
+        ->assertSee('Chat Saya dengan Admin Utama')
+        ->assertSee('chatBadge(', false)
+        ->assertDontSee('Lengkapi profil untuk membuka chat admin');
+});
+
+it('setelah profil tersimpan pekerja bisa kembali ke lowongan dan memulai chat tanpa CV', function () {
+    $user = buatUser(Role::PencariKerja);
+    $lowongan = JobListing::factory()->aktif()->create();
+    $kecamatan = buatKecamatan();
+
+    $this->actingAs($user)->get(route('public.lowongan.show', $lowongan))->assertOk()
+        ->assertSee('Lengkapi Profil untuk Chat')->assertDontSee('action="'.route('chat.start', $lowongan).'"', false);
+    $this->get(route('chat.interest', $lowongan))->assertRedirect(route('pencari.profil.edit'));
+    $this->put(route('pencari.profil.update'), [
+        'nama' => 'Pekerja Siap Chat', 'nik' => '5302010101990001', 'jenis_kelamin' => 'L',
+        'tanggal_lahir' => '1999-01-01', 'pendidikan' => 'sma', 'no_wa' => '081234567890',
+        'kecamatan_id' => $kecamatan->id, 'desa_id' => $kecamatan->desa()->first()->id,
+        'alamat_detail' => 'RT 01', 'kategori' => [$lowongan->kategori_id],
+    ])->assertSessionHasNoErrors()->assertRedirect(route('public.lowongan.show', $lowongan).'#chat-admin');
+
+    $this->actingAs($user->fresh())->get(route('public.lowongan.show', $lowongan))->assertOk()
+        ->assertSee('action="'.route('chat.start', $lowongan).'"', false);
+    $chat = mulaiChat($this, $user->fresh(), $lowongan);
+    $this->get(route('chat.show', $chat))->assertOk();
+    expect($user->fresh()->pencariKerja->cv_path)->toBeNull();
 });
 
 it('membuat satu percakapan per pekerja dan lowongan serta menyimpan pesan minat', function () {

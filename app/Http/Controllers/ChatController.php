@@ -49,11 +49,6 @@ class ChatController extends Controller
     {
         abort_unless($lowongan->isAktif() && $lowongan->sisaKuota() > 0, 404);
 
-        if (! $request->user()->pencariKerja) {
-            return redirect()->route('pencari.profil.edit')
-                ->with('error', 'Lengkapi profil dan kemampuan Anda dahulu agar Admin Utama bisa menilai kecocokan Anda. Setelah itu pilih kembali lowongannya.');
-        }
-
         $chat = DB::transaction(function () use ($request, $lowongan) {
             $chat = JobChat::firstOrCreate([
                 'user_id' => $request->user()->id,

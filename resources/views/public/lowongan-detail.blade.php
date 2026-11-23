@@ -16,11 +16,16 @@
                 <a href="{{ route('register.pencari-kerja') }}" class="mt-3 block text-sm text-brand-700 hover:underline">Belum punya akun? Daftar pencari kerja</a>
             @else
                 @if (auth()->user()->isRole(\App\Enums\Role::PencariKerja))
+                    @if (auth()->user()->bisaChat())
                     <form method="POST" action="{{ route('chat.start', $lowongan) }}" class="mt-4">
                         @csrf
                         <x-button>Chat Admin</x-button>
                     </form>
-                    <p class="mt-2 text-xs text-slate-500">Saat dibuka, pesan minat dikirim ke Admin Utama beserta lowongan ini. Lengkapi profil terlebih dahulu agar admin bisa menilai kemampuan Anda.</p>
+                    <p class="mt-2 text-xs text-slate-500">Saat dibuka, pesan minat dikirim ke Admin Utama beserta lowongan ini.</p>
+                    @else
+                        <p class="mt-4 text-sm font-medium text-brand-700">Lengkapi profil Anda terlebih dahulu agar bisa chat dengan Admin Utama tentang pekerjaan ini.</p>
+                        <x-button :href="route('chat.interest', $lowongan)" class="mt-4">Lengkapi Profil untuk Chat</x-button>
+                    @endif
                 @elseif (auth()->user()->isSuperAdmin())
                     <x-button :href="route('chat.index')" class="mt-4">Buka Chat Pencari Kerja</x-button>
                 @else

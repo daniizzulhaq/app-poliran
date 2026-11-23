@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -61,7 +60,7 @@ class Menu
         }
 
         $hasil = [];
-        if ($user->isSuperAdmin() || $user->isRole(Role::PencariKerja)) {
+        if ($user->bisaChat()) {
             $hasil['Pesan'][] = [
                 'label' => $user->isSuperAdmin() ? 'Chat Pencari Kerja' : 'Chat Admin Utama',
                 'url' => route('chat.index'),

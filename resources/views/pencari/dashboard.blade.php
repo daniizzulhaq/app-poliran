@@ -1,18 +1,23 @@
 <x-layouts.app title="Dashboard Saya">
     <x-page-header title="Dashboard Saya" :subtitle="$pencari?->nama" />
 
-    <section class="mb-8">
-        @include('lowongan._tersedia')
-        <x-button :href="route('chat.index')" variant="secondary" class="mt-4">Chat Saya dengan Admin Utama</x-button>
-    </section>
-
-    @if (! $pencari)
-        <x-card>
-            <p class="font-semibold">Langkah berikutnya: lengkapi profil Anda</p>
-            <p class="mt-1 text-sm text-slate-600">Isi data diri, alamat di TTS, minat kerja, dan kemampuan Anda. Setelah itu petugas Polres di kecamatan Anda bisa mendata dan membantu Anda.</p>
+    @if (! auth()->user()->bisaChat())
+        <x-card class="mb-6">
+            <p class="font-semibold">Lengkapi profil untuk membuka chat admin</p>
+            <p class="mt-2 text-sm text-slate-600">Isi data diri, alamat di TTS, dan minat kerja, serta tambahkan kemampuan Anda. Profil lengkap membantu Admin Utama memeriksa kompetensi Anda dan mencarikan pekerjaan yang sesuai.</p>
+            <p class="mt-2 text-sm font-medium text-brand-700">Chat dengan Admin Utama tersedia setelah profil Anda lengkap.</p>
             <x-button :href="route('pencari.profil.edit')" class="mt-4">Lengkapi Profil</x-button>
         </x-card>
-    @else
+    @endif
+
+    <section class="mb-8">
+        @include('lowongan._tersedia')
+        @if (auth()->user()->bisaChat())
+            <x-button :href="route('chat.index')" variant="secondary" class="mt-4">Chat Saya dengan Admin Utama</x-button>
+        @endif
+    </section>
+
+    @if ($pencari)
         @php($urutan = array_search($pencari->status, $tahapan, true))
         <x-card title="Status Saya" class="mb-4">
             <div class="mb-4 flex flex-wrap items-center gap-2">

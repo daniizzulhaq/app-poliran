@@ -62,6 +62,12 @@ class User extends Authenticatable
         return $this->isRole(Role::SuperAdmin);
     }
 
+    public function bisaChat(): bool
+    {
+        return $this->isSuperAdmin()
+            || ($this->isRole(Role::PencariKerja) && $this->pencariKerja?->profilLengkap());
+    }
+
     public function isAdminLapangan(): bool
     {
         return $this->isRole(Role::AdminLapangan);
