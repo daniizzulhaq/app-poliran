@@ -8,8 +8,8 @@
                 <h1 class="mt-4 text-4xl leading-tight font-extrabold text-white sm:text-5xl">{{ $konten['hero_judul'] }}</h1>
                 <p class="mt-4 max-w-xl text-lg text-brand-100">{{ $konten['hero_teks'] }}</p>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <x-button href="#lowongan" variant="gold" size="lg">Lihat Pekerjaan</x-button>
-                    <x-button href="#pelatihan" variant="secondary" size="lg">Lihat Pelatihan</x-button>
+                    <x-button href="#lowongan" variant="gold" size="lg">Lihat Pekerjaan Tersedia</x-button>
+                    <x-button href="#pelatihan" variant="secondary" size="lg">Lihat Pelatihan Tersedia</x-button>
                 </div>
             </div>
             <div class="hidden lg:col-span-2 lg:block">
