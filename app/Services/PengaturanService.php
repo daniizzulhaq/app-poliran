@@ -17,7 +17,7 @@ class PengaturanService
         'sambutan_pangkat' => 'AKBP',
         'sambutan_isi' => "Selamat datang di POLIRAN.\n\nMelalui program ini, Polres Timor Tengah Selatan ingin membantu warga yang belum bekerja agar bisa mendapatkan pelatihan dan disalurkan ke pekerjaan yang layak.",
         'sambutan_foto' => null,
-        'program_teks' => 'POLIRAN (Polisi Peduli Pengangguran) adalah program Polres Timor Tengah Selatan yang menghubungkan warga pencari kerja dengan pelatihan keterampilan dan penyedia kerja yang sudah disurvei oleh petugas. Semua layanan gratis.',
+        'program_teks' => 'Poliran adalah singkatan dari Polisi Peduli Pengangguran, yaitu program Kepolisian Negara Republik Indonesia (Polri) untuk membantu masyarakat mendapatkan pekerjaan melalui pendataan pencari kerja, pelatihan keterampilan, dan penyaluran kerja bersama dunia usaha serta pemerintah daerah.',
         'kontak_alamat' => 'Polres Timor Tengah Selatan, SoE, Nusa Tenggara Timur',
         'kontak_telepon' => '-',
         'kontak_wa' => '-',
