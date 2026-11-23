@@ -1,7 +1,7 @@
 <div class="flex flex-wrap items-end justify-between gap-3">
     <div>
         <h2 class="text-2xl font-extrabold">Lowongan Pekerjaan Tersedia</h2>
-        <p class="mt-2 text-sm text-slate-600">Pilih pekerjaan yang Anda minati, lalu chat Admin Utama untuk memeriksa kecocokan kemampuan Anda.</p>
+        <p class="mt-2 text-sm text-slate-600">Pilih pekerjaan yang Anda minati, lalu chat Admin Utama untuk memeriksa kompetensi Anda.</p>
     </div>
     <a href="{{ route('public.lowongan.index') }}" class="text-sm font-semibold text-brand-700 hover:underline">Lihat semua &rarr;</a>
 </div>

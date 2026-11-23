@@ -8,8 +8,8 @@
                 <h1 class="mt-4 text-4xl leading-tight font-extrabold text-white sm:text-5xl">{{ $konten['hero_judul'] }}</h1>
                 <p class="mt-4 max-w-xl text-lg text-brand-100">{{ $konten['hero_teks'] }}</p>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <x-button :href="route('register')" variant="gold" size="lg">Daftar Sekarang</x-button>
-                    <x-button :href="route('public.pelatihan.index')" variant="secondary" size="lg">Lihat Pelatihan</x-button>
+                    <x-button href="#lowongan" variant="gold" size="lg">Lihat Pekerjaan</x-button>
+                    <x-button href="#pelatihan" variant="secondary" size="lg">Lihat Pelatihan</x-button>
                 </div>
             </div>
             <div class="hidden lg:col-span-2 lg:block">
@@ -26,19 +26,44 @@
         </div>
     </section>
 
-    <section id="lowongan" class="mx-auto max-w-6xl px-4 py-12">
+    {{-- Penjelasan POLIRAN --}}
+    <section class="bg-slate-50 py-12">
+        <div class="mx-auto max-w-6xl px-4">
+            <h2 class="text-2xl font-extrabold sm:text-3xl">Tentang POLIRAN</h2>
+            <p class="mt-3 max-w-3xl whitespace-pre-line text-slate-700">{{ $konten['program_teks'] }}</p>
+        </div>
+    </section>
+
+    <section id="lowongan" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-12">
         @include('lowongan._tersedia')
+    </section>
+
+    {{-- Pelatihan dibuka --}}
+    <section id="pelatihan" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-12">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+            <h2 class="text-2xl font-extrabold sm:text-3xl">Pelatihan yang Tersedia</h2>
+            <a href="{{ route('public.pelatihan.index') }}" class="text-sm font-semibold text-brand-700 hover:underline">Lihat semua &rarr;</a>
+        </div>
+        @if ($pelatihan->isEmpty())
+            <x-empty class="mt-6" message="Belum ada pelatihan yang dibuka. Silakan cek kembali nanti." />
+        @else
+            <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($pelatihan as $item)
+                    <x-pelatihan-card :pelatihan="$item" />
+                @endforeach
+            </div>
+        @endif
     </section>
 
     {{-- Untuk siapa --}}
     <section class="mx-auto max-w-6xl px-4 py-16">
         <h2 class="text-center text-2xl font-extrabold sm:text-3xl">Untuk Siapa POLIRAN?</h2>
-        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <p class="mt-3 text-center text-slate-600">Pilih layanan sesuai kebutuhan Anda. Semua layanan gratis.</p>
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
             @foreach ([
-                ['🏢', 'Penyedia Kerja', 'Perusahaan, UMKM, perorangan, atau instansi pemerintah yang butuh pekerja. Data Anda disurvei petugas agar aman.', 'Daftar sebagai Instansi', route('register.instansi')],
-                ['🎓', 'Penyedia Pelatihan', 'Pelatihan diselenggarakan oleh Polres TTS bersama mitra. Tidak perlu membuat akun untuk melihat jadwal pelatihan.', 'Lihat Pelatihan', route('public.pelatihan.index')],
                 ['🧑‍🔧', 'Pencari Kerja', 'Warga TTS yang ingin bekerja. Daftar, lengkapi profil, dan petugas di kecamatan Anda akan membantu.', 'Daftar Pencari Kerja', route('register.pencari-kerja')],
                 ['📚', 'Pencari Pelatihan', 'Ingin menambah keterampilan? Pilih pelatihan yang dibuka dan daftar langsung dengan akun Anda.', 'Lihat & Daftar Pelatihan', route('public.pelatihan.index')],
+                ['🏢', 'Pencari Pekerja', 'Perusahaan, UMKM, perorangan, atau instansi pemerintah yang membutuhkan pekerja. Daftar sebagai penyedia kerja untuk membuka lowongan setelah verifikasi petugas.', 'Daftar Pencari Pekerja', route('register.instansi')],
             ] as [$ikon, $judul, $teks, $tombol, $url])
                 <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <span class="text-4xl">{{ $ikon }}</span>
@@ -84,30 +109,12 @@
         </div>
     </section>
 
-    {{-- Program & alur --}}
+    {{-- Alur program --}}
     <section class="bg-slate-50 py-16">
         <div class="mx-auto max-w-6xl px-4">
-            <h2 class="text-2xl font-extrabold sm:text-3xl">Tentang Program</h2>
-            <p class="mt-3 max-w-3xl whitespace-pre-line text-slate-700">{{ $konten['program_teks'] }}</p>
+            <h2 class="text-2xl font-extrabold sm:text-3xl">Alur Program POLIRAN</h2>
             <div class="mt-8">@include('public._alur')</div>
         </div>
-    </section>
-
-    {{-- Pelatihan dibuka --}}
-    <section class="mx-auto max-w-6xl px-4 py-16">
-        <div class="flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-extrabold sm:text-3xl">Pelatihan yang Sedang Dibuka</h2>
-            <a href="{{ route('public.pelatihan.index') }}" class="text-sm font-semibold text-brand-700 hover:underline">Lihat semua &rarr;</a>
-        </div>
-        @if ($pelatihan->isEmpty())
-            <x-empty class="mt-6" message="Belum ada pelatihan yang dibuka. Silakan cek kembali nanti." />
-        @else
-            <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($pelatihan as $item)
-                    <x-pelatihan-card :pelatihan="$item" />
-                @endforeach
-            </div>
-        @endif
     </section>
 
     {{-- Cara daftar --}}
@@ -115,7 +122,7 @@
         <div class="mx-auto max-w-4xl px-4">
             <h2 class="text-center text-2xl font-extrabold text-white sm:text-3xl">Cara Daftar</h2>
             <div class="mt-6 flex flex-wrap justify-center gap-2">
-                @foreach (['pencari' => 'Pencari Kerja', 'pelatihan' => 'Pencari Pelatihan', 'instansi' => 'Penyedia Kerja'] as $kunci => $label)
+                @foreach (['pencari' => 'Pencari Kerja', 'pelatihan' => 'Pencari Pelatihan', 'instansi' => 'Pencari Pekerja'] as $kunci => $label)
                     <button type="button" @click="tab = '{{ $kunci }}'" :class="tab === '{{ $kunci }}' ? 'bg-gold-400 text-brand-900' : 'bg-white/10 text-white hover:bg-white/20'" class="rounded-full px-4 py-2 text-sm font-semibold">{{ $label }}</button>
                 @endforeach
             </div>
