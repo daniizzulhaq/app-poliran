@@ -17,11 +17,4 @@
             </div>
         </div>
     </div>
-    <div class="relative border-t border-white/10 bg-white/5">
-        <div class="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-7 sm:grid-cols-4 sm:gap-8">
-            @foreach ([['terdaftar', 'warga terdaftar'], ['bersertifikat', 'warga bersertifikat'], ['disalurkan', 'warga sudah disalurkan kerja'], ['instansi', 'instansi terverifikasi']] as [$kunci, $label])
-                <div class="border-l-2 border-gold-400/50 pl-4"><p class="text-3xl font-extrabold text-white">{{ number_format($statistik[$kunci], 0, ',', '.') }}<span class="ml-1 text-sm text-gold-400" aria-hidden="true">&bull;</span></p><p class="mt-1 text-xs leading-relaxed text-brand-100">{{ $label }}</p></div>
-            @endforeach
-        </div>
-    </div>
 </section>
