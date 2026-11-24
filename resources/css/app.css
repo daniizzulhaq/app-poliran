@@ -28,6 +28,79 @@
     [x-cloak] { display: none !important; }
     body { @apply bg-slate-50 text-slate-800 antialiased; }
     h1, h2, h3 { @apply text-slate-900; }
+    :focus-visible { outline: 3px solid #b9861a; outline-offset: 4px; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+    }
+}
+
+@layer components {
+    .section-eyebrow {
+        @apply text-[11px] font-bold tracking-[0.18em] text-gold-600 uppercase;
+    }
+    .public-nav a {
+        @apply relative py-7 transition-colors;
+    }
+    .public-nav a[aria-current="page"] {
+        @apply font-bold text-brand-800;
+    }
+    .public-nav a[aria-current="page"]::after {
+        content: '';
+        @apply absolute right-0 bottom-4 left-0 h-0.5 rounded-full bg-gold-500;
+    }
+    .poliran-hero {
+        background-image: radial-gradient(ellipse at 90% 40%, #27425d 0%, transparent 65%);
+    }
+    .hero-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.2;
+        background-image: linear-gradient(#ffffff15 1px, transparent 1px), linear-gradient(90deg, #ffffff15 1px, transparent 1px);
+        background-size: 64px 64px;
+        mask-image: linear-gradient(90deg, transparent, #000);
+        pointer-events: none;
+    }
+    .hero-title { line-height: 1.08; letter-spacing: -0.045em; text-wrap: balance; }
+    .hero-portrait-area { height: 490px; padding: 8px 22px 40px; }
+    .hero-portrait {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 180px 180px 20px 20px;
+        background: white;
+        border: 5px solid #ffffff20;
+        background-clip: padding-box;
+        box-shadow: 0 24px 60px #0003;
+    }
+    .hero-orbit {
+        position: absolute;
+        inset: -12px 5px 65px;
+        border-radius: 200px 200px 24px 24px;
+        border: 1px solid #f2c14e70;
+        transform: rotate(6deg);
+        pointer-events: none;
+    }
+    .officer-photo { height: 100%; width: 100%; object-fit: cover; object-position: center top; }
+    .officer-photo-original {
+        position: absolute;
+        width: 190%;
+        max-width: none;
+        height: auto;
+        left: -45%;
+        top: -45%;
+    }
+    .officer-welcome { height: 340px; }
+    .officer-welcome .officer-photo-original { top: -40%; }
+    .service-card { transition: border-color 180ms ease, box-shadow 180ms ease; }
+    .service-card:hover { border-color: #b9861a70; box-shadow: 0 10px 30px #0b1e340a; }
+    @media (max-width: 639px) {
+        .hero-portrait-area { max-width: 340px; height: 390px; padding: 8px 18px 35px; }
+        .hero-portrait-area .officer-photo-original { top: -40%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .service-card { transition: none; }
+    }
 }
 
 @layer components {

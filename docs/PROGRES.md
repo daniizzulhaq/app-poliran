@@ -16,7 +16,7 @@ Test: 135 test Pest hijau di MySQL (termasuk smoke test semua halaman untuk seti
 ## Keputusan (opsi paling sederhana bila spesifikasi tidak jelas)
 
 1. **Data wilayah**: 32 kecamatan & 278 desa/kelurahan TTS dari API wilayah.id (kode Kemendagri 53.02; API emsifa tidak dipakai karena memakai kode BPS, di sana 5302 = Sumba Timur). Disalin ke `database/data/wilayah_tts.csv` agar seeding tidak butuh internet. `wilayah:impor` / tombol Sinkronkan hanya menambah data baru, cocokkan berdasarkan kode lalu nama, dan tidak menimpa nama yang diubah admin. Nama huruf kapital dirapikan ("KI'E" → "Ki'e").
-2. **Logo**: `public/images/logo-polres.svg` adalah logo sementara. Ganti dengan logo resmi (nama file sama, atau ubah di `resources/views/components/logo.blade.php`).
+2. **Identitas visual (24 November 2026)**: logo unggahan pengguna dipasang sebagai PNG transparan di `public/images/logo-polres-tts.png` dan `public/images/logo-polisi-bersama-masyarakat.png`. Foto asli unggahan Kapolres ada di `public/images/kapolres-tts.jpg`; pembingkaian memakai CSS tanpa mengubah wajah. Header, footer, favicon, halaman masuk, dan dashboard memakai logo baru. Beranda memakai desain navy, emas, dan putih dengan foto Kapolres, statistik, serta navigasi aktif. Unggahan foto dan konten sambutan dari admin tetap didahulukan. Detail aset dan prompt: `docs/ASET-VISUAL.md`.
 3. **Zona waktu**: Asia/Makassar (WITA).
 4. **Database lokal & test**: MySQL/MariaDB (`poliran` dan `poliran_test`), karena driver SQLite tidak tersedia di PHP lokal.
 5. **Composer platform** dikunci ke PHP 8.3 agar dependency cocok dengan hosting cPanel. `public/build` ikut di-commit agar hosting tidak perlu Node.js.
