@@ -62,25 +62,6 @@
         pointer-events: none;
     }
     .hero-title { line-height: 1.08; letter-spacing: -0.045em; text-wrap: balance; }
-    .hero-portrait-area { height: 490px; padding: 8px 22px 40px; }
-    .hero-portrait {
-        position: relative;
-        height: 100%;
-        overflow: hidden;
-        border-radius: 180px 180px 20px 20px;
-        background: white;
-        border: 5px solid #ffffff20;
-        background-clip: padding-box;
-        box-shadow: 0 24px 60px #0003;
-    }
-    .hero-orbit {
-        position: absolute;
-        inset: -12px 5px 65px;
-        border-radius: 200px 200px 24px 24px;
-        border: 1px solid #f2c14e70;
-        transform: rotate(6deg);
-        pointer-events: none;
-    }
     .officer-photo { height: 100%; width: 100%; object-fit: cover; object-position: center top; }
     .officer-photo-original {
         position: absolute;
@@ -94,10 +75,6 @@
     .officer-welcome .officer-photo-original { top: -40%; }
     .service-card { transition: border-color 180ms ease, box-shadow 180ms ease; }
     .service-card:hover { border-color: #b9861a70; box-shadow: 0 10px 30px #0b1e340a; }
-    @media (max-width: 639px) {
-        .hero-portrait-area { max-width: 340px; height: 390px; padding: 8px 18px 35px; }
-        .hero-portrait-area .officer-photo-original { top: -40%; }
-    }
     @media (prefers-reduced-motion: reduce) {
         .service-card { transition: none; }
     }

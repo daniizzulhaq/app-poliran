@@ -27,7 +27,7 @@
                 <a href="{{ route('public.lowongan.index') }}" aria-current="{{ request()->routeIs('public.lowongan.*') ? 'page' : 'false' }}" class="hover:text-brand-700">Lowongan</a>
                 <a href="{{ route('public.pelatihan.index') }}" aria-current="{{ request()->routeIs('public.pelatihan.*') ? 'page' : 'false' }}" class="hover:text-brand-700">Pelatihan</a>
                 <a href="{{ route('public.tentang') }}" aria-current="{{ request()->routeIs('public.tentang') ? 'page' : 'false' }}" class="hover:text-brand-700">Tentang</a>
-                <a href="{{ route('public.kontak') }}" aria-current="{{ request()->routeIs('public.kontak') ? 'page' : 'false' }}" class="hover:text-brand-700">Kontak</a>
+                <a href="{{ route('public.kontak') }}" aria-current="{{ request()->routeIs('public.kontak') ? 'page' : 'false' }}" class="hover:text-brand-700">Lokasi</a>
             </nav>
             <div class="hidden items-center gap-2 md:flex">
                 @auth
@@ -47,7 +47,7 @@
                 <a href="{{ route('public.lowongan.index') }}" class="rounded px-2 py-2 hover:bg-slate-50">Lowongan</a>
                 <a href="{{ route('public.pelatihan.index') }}" class="rounded px-2 py-2 hover:bg-slate-50">Pelatihan</a>
                 <a href="{{ route('public.tentang') }}" class="rounded px-2 py-2 hover:bg-slate-50">Tentang</a>
-                <a href="{{ route('public.kontak') }}" class="rounded px-2 py-2 hover:bg-slate-50">Kontak</a>
+                <a href="{{ route('public.kontak') }}" class="rounded px-2 py-2 hover:bg-slate-50">Lokasi</a>
             </nav>
             <div class="mt-3 grid grid-cols-2 gap-2">
                 @auth
@@ -68,20 +68,13 @@
     </main>
 
     <footer class="border-t-4 border-gold-400 bg-brand-900 text-brand-100">
-        <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-3">
+        <div class="mx-auto grid max-w-6xl items-start gap-10 px-4 py-14 md:grid-cols-[2fr_1fr]">
             <div>
                 <x-logo dark />
                 <p class="mt-3 text-sm">Polisi Peduli Pengangguran. Program gratis Polres Timor Tengah Selatan untuk warga TTS.</p>
                 <div class="mt-5 inline-flex rounded-xl bg-white px-4 py-3">
                     <img src="{{ asset('images/logo-polisi-bersama-masyarakat.png') }}" alt="Polisi Bersama Masyarakat — Melindungi, Mengayomi dan Melayani" width="240" height="88" class="h-16 w-auto max-w-full object-contain" loading="lazy">
                 </div>
-            </div>
-            <div class="text-sm">
-                <p class="mb-2 font-semibold text-white">Kontak Layanan</p>
-                <p>{{ $kontak['kontak_alamat'] }}</p>
-                <p>Telepon: {{ $kontak['kontak_telepon'] }}</p>
-                <p>WhatsApp: {{ $kontak['kontak_wa'] }}</p>
-                <p>Email: {{ $kontak['kontak_email'] }}</p>
             </div>
             <div class="text-sm">
                 <p class="mb-2 font-semibold text-white">Ayo bergabung</p>

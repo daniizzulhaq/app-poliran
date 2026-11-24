@@ -27,7 +27,7 @@ it('halaman awal tampil lengkap dengan lowongan tersedia', function () {
         ->assertSee('Pelatihan Las Dibuka')->assertDontSee('Pelatihan Masih Draft')
         ->assertSee('Cara Daftar')
         ->assertSee('Yohana')
-        ->assertSee('Kontak Layanan')
+        ->assertDontSee('Kontak Layanan')
         ->assertSee('Hati-hati Calo Kerja')->assertSee('110')
         ->assertSee('Lowongan Pekerjaan Tersedia')->assertSee('Lowongan Pekerjaan Terbaru');
 });

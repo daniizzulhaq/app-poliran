@@ -163,8 +163,4 @@
         </section>
     @endif
 
-    {{-- Kontak --}}
-    <section class="bg-slate-50 py-16">
-        <div class="mx-auto max-w-6xl px-4">@include('public._kontak')</div>
-    </section>
 </x-layouts.public>
