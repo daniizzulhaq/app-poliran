@@ -70,8 +70,14 @@
         <div class="mx-auto max-w-6xl px-4">
             <h2 class="text-center text-2xl font-extrabold sm:text-3xl">Hasil Program</h2>
             <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-5">
-                @foreach ([['terdaftar', 'warga terdaftar'], ['dilatih', 'warga dilatih'], ['bersertifikat', 'warga bersertifikat'], ['disalurkan', 'warga sudah disalurkan kerja'], ['instansi', 'instansi terverifikasi']] as [$kunci, $label])
-                    <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
+                @foreach ([
+                    ['terdaftar', 'warga terdaftar', 'border-[#c5d9ee] bg-[#e3effb]'],
+                    ['dilatih', 'warga dilatih', 'border-[#ecd5a8] bg-[#fff1d6]'],
+                    ['bersertifikat', 'warga bersertifikat', 'border-[#c5dfd0] bg-[#e5f3ec]'],
+                    ['disalurkan', 'warga sudah disalurkan kerja', 'border-[#d8cfee] bg-[#eee9f8]'],
+                    ['instansi', 'instansi terverifikasi', 'border-[#ebcfbb] bg-[#fbeade]'],
+                ] as [$kunci, $label, $warna])
+                    <div class="rounded-2xl border {{ $warna }} p-5 text-center shadow-sm">
                         <p class="text-3xl font-extrabold text-brand-700">{{ number_format($statistik[$kunci], 0, ',', '.') }}</p>
                         <p class="mt-1 text-sm text-slate-600">{{ $label }}</p>
                     </div>
