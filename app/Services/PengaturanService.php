@@ -13,7 +13,7 @@ class PengaturanService
     public const DEFAULTS = [
         'hero_judul' => 'Polisi Peduli Pengangguran',
         'hero_teks' => 'Program GRATIS dari Polres Timor Tengah Selatan untuk membantu warga TTS mendapatkan pelatihan dan pekerjaan. Tidak dipungut biaya apa pun.',
-        'sambutan_nama' => 'Nama Kapolres',
+        'sambutan_nama' => 'Kristiyan Beorbel Martino, S.H., S.I.K.,M.M. C.ELM.',
         'sambutan_pangkat' => 'AKBP',
         'sambutan_isi' => "Selamat datang di POLIRAN.\n\nMelalui program ini, Polres Timor Tengah Selatan ingin membantu warga yang belum bekerja agar bisa mendapatkan pelatihan dan disalurkan ke pekerjaan yang layak.",
         'sambutan_foto' => null,

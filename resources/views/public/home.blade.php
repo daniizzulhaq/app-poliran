@@ -51,15 +51,15 @@
         <x-syarat-usia class="mx-auto mt-4 max-w-3xl text-center" />
         <div class="mt-10 grid gap-6 md:grid-cols-3">
             @foreach ([
-                ['briefcase', 'Pencari Kerja', 'Warga TTS yang ingin bekerja. Daftar, lengkapi profil, dan petugas di kecamatan Anda akan membantu.', 'Daftar sebagai pencari kerja', route('register.pencari-kerja')],
-                ['book', 'Pencari Pelatihan', 'Ingin menambah keterampilan? Pilih pelatihan yang dibuka dan daftar langsung dengan akun Anda.', 'Daftar sebagai pencari pelatihan', route('public.pelatihan.index')],
-                ['building', 'Penyedia Kerja', 'Perusahaan, UMKM, perorangan, atau instansi pemerintah yang membutuhkan pekerja. Daftar sebagai penyedia kerja untuk membuka lowongan setelah verifikasi petugas.', 'Daftar sebagai penyedia kerja', route('register.instansi')],
-            ] as [$ikon, $judul, $teks, $tombol, $url])
-                <div class="service-card flex flex-col rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
-                    <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700"><x-icon :name="$ikon" /></span>
-                    <h3 class="mt-5 text-lg font-bold">{{ $judul }}</h3>
-                    <p class="mt-2 flex-1 text-sm text-slate-600">{{ $teks }}</p>
-                    <x-button :href="$url" variant="secondary" class="mt-5">{{ $tombol }}</x-button>
+                ['briefcase', 'Pencari Kerja', 'Warga TTS yang ingin bekerja. Daftar, lengkapi profil, dan petugas di kecamatan Anda akan membantu.', 'Daftar sebagai pencari kerja', route('register.pencari-kerja'), 'service-card--blue', 'primary'],
+                ['book', 'Pencari Pelatihan', 'Ingin menambah keterampilan? Pilih pelatihan yang dibuka dan daftar langsung dengan akun Anda.', 'Daftar sebagai pencari pelatihan', route('public.pelatihan.index'), 'service-card--cream', 'gold'],
+                ['building', 'Penyedia Kerja', 'Perusahaan, UMKM, perorangan, atau instansi pemerintah yang membutuhkan pekerja. Daftar sebagai penyedia kerja untuk membuka lowongan setelah verifikasi petugas.', 'Daftar sebagai penyedia kerja', route('register.instansi'), 'service-card--navy', 'secondary'],
+            ] as [$ikon, $judul, $teks, $tombol, $url, $warna, $varianTombol])
+                <div class="service-card {{ $warna }} flex flex-col rounded-2xl border p-7 shadow-sm">
+                    <span class="service-card-icon flex h-12 w-12 items-center justify-center rounded-xl"><x-icon :name="$ikon" /></span>
+                    <h3 class="service-card-title mt-5 text-lg font-bold">{{ $judul }}</h3>
+                    <p class="service-card-description mt-2 flex-1 text-sm">{{ $teks }}</p>
+                    <x-button :href="$url" :variant="$varianTombol" class="mt-5">{{ $tombol }}</x-button>
                 </div>
             @endforeach
         </div>
@@ -90,8 +90,8 @@
                 <p class="section-eyebrow">Sambutan Kapolres</p>
                 <span class="mt-3 block h-10 font-serif text-6xl text-gold-500" aria-hidden="true">&ldquo;</span>
                 <blockquote class="mt-3 text-base leading-relaxed whitespace-pre-line text-slate-700 sm:text-lg">{{ $konten['sambutan_isi'] }}</blockquote>
-                <p class="mt-6 font-bold">{{ $konten['sambutan_nama'] === 'Nama Kapolres' ? 'Kapolres Timor Tengah Selatan' : $konten['sambutan_nama'] }}</p>
-                <p class="text-sm text-slate-500">{{ $konten['sambutan_pangkat'] }} · Kapolres Timor Tengah Selatan</p>
+                <p class="mt-6 font-bold">{{ $konten['sambutan_pangkat'] }} {{ $konten['sambutan_nama'] === 'Nama Kapolres' ? \App\Services\PengaturanService::DEFAULTS['sambutan_nama'] : $konten['sambutan_nama'] }}</p>
+                <p class="text-sm text-slate-500">Kapolres Timor Tengah Selatan</p>
             </div>
         </div>
     </section>

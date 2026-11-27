@@ -73,8 +73,42 @@
     }
     .officer-welcome { height: 340px; }
     .officer-welcome .officer-photo-original { top: -40%; }
-    .service-card { transition: border-color 180ms ease, box-shadow 180ms ease; }
-    .service-card:hover { border-color: #b9861a70; box-shadow: 0 10px 30px #0b1e340a; }
+    .service-card {
+        background-color: var(--service-background);
+        border-color: var(--service-border);
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+    .service-card--blue {
+        --service-background: #e3effb;
+        --service-border: #b6cfea;
+        --service-title: #173a64;
+        --service-description: #354e69;
+        --service-icon-background: #c8ddf4;
+        --service-icon-color: #173a64;
+    }
+    .service-card--cream {
+        --service-background: #fff1d6;
+        --service-border: #e7c98e;
+        --service-title: #62451d;
+        --service-description: #68573b;
+        --service-icon-background: #f6dda9;
+        --service-icon-color: #79551a;
+    }
+    .service-card--navy {
+        --service-background: #173a64;
+        --service-border: #2a5b96;
+        --service-title: #ffffff;
+        --service-description: #d6e4f5;
+        --service-icon-background: #2a527f;
+        --service-icon-color: #f2c14e;
+    }
+    .service-card-title { color: var(--service-title); }
+    .service-card-description { color: var(--service-description); }
+    .service-card-icon {
+        background-color: var(--service-icon-background);
+        color: var(--service-icon-color);
+    }
+    .service-card:hover { border-color: #b9861a; box-shadow: 0 10px 30px #0b1e3414; }
     @media (prefers-reduced-motion: reduce) {
         .service-card { transition: none; }
     }
