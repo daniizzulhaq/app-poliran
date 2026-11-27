@@ -2,7 +2,7 @@
     <div class="hero-grid" aria-hidden="true"></div>
     <div class="relative mx-auto max-w-6xl px-4 py-14 sm:py-20">
         <div class="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
-            <span class="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3 py-2 text-[10px] font-bold tracking-[0.16em] text-gold-400 uppercase sm:text-xs"><span class="h-1.5 w-1.5 rounded-full bg-gold-400" aria-hidden="true"></span> Bersama membangun masa depan</span>
+            <span class="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3 py-2 text-[10px] font-bold tracking-[0.16em] text-gold-400 uppercase sm:text-xs"><span class="h-1.5 w-1.5 rounded-full bg-gold-400" aria-hidden="true"></span> Diberkati untuk memberkati</span>
             <p class="mt-7 text-xs font-semibold tracking-[0.25em] text-brand-200 uppercase">POLIRAN · Polres TTS</p>
             <h1 class="hero-title mt-3 max-w-3xl text-4xl font-extrabold text-white sm:text-6xl">{{ $konten['hero_judul'] }}</h1>
             <div class="mt-6 h-1 w-16 rounded-full bg-gold-400" aria-hidden="true"></div>
